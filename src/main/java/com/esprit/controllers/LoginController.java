@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.esprit.controllers.Back.AdminController;
-import com.esprit.controllers.Back.PatientController;
+import com.esprit.controllers.back.AdminController;
+import com.esprit.controllers.back.PatientController;
 import com.esprit.main.App;
 import com.esprit.models.User;
 import com.esprit.services.UserService;

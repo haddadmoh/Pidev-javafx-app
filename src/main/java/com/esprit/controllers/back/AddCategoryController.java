@@ -1,4 +1,4 @@
-package com.esprit.controllers.Back;
+package com.esprit.controllers.back;
 
 import com.esprit.models.PostCategory;
 import com.esprit.services.PostCategoryService;

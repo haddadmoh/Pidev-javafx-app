@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.esprit.controllers.Back.PatientController"
+<VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.esprit.controllers.back.PatientController"
       spacing="20" alignment="CENTER" styleClass="main-container">
     <Label fx:id="welcomeLabel" styleClass="welcome-label"/>
     <Button text="Logout" fx:id="logoutBtn" onAction="#handleLogout" styleClass="logout-btn"/>

@@ -184,3 +184,188 @@
 }
 
 /** add category end **/
+
+/** view categories start **/
+/* Add these styles to your CSS file */
+.count-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7f8c8d;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 10 0;
+}
+
+.category-header {
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 10;
+}
+
+.post-count {
+    -fx-font-size: 13px;
+    -fx-text-fill: white;
+    -fx-padding: 2 8;
+    -fx-background-color: #3498db;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+/* Keep all your existing styles */
+.transparent-scroll {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.categories-container {
+    -fx-padding: 20;
+    -fx-spacing: 20;
+    -fx-background-color: white;
+}
+
+.section-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 0 0 10 0;
+}
+
+.categories-list {
+    -fx-padding: 10;
+}
+
+.category-card {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1;
+    -fx-padding: 15;
+    -fx-spacing: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);
+}
+
+.category-name {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a237e;
+}
+
+.category-description {
+    -fx-font-size: 14px;
+    -fx-text-fill: #424242;
+    -fx-padding: 0 0 0 5;
+}
+
+.category-bottom-row {
+    -fx-alignment: center-left;
+}
+
+.category-date {
+    -fx-font-size: 12px;
+    -fx-text-fill: #757575;
+}
+
+.empty-message {
+    -fx-font-size: 16px;
+    -fx-text-fill: #757575;
+    -fx-font-style: italic;
+    -fx-padding: 20;
+    -fx-alignment: center;
+}
+
+.error-message {
+    -fx-font-size: 16px;
+    -fx-text-fill: #c62828;
+    -fx-padding: 20;
+    -fx-alignment: center;
+}
+
+.action-buttons {
+    -fx-spacing: 15;
+    -fx-padding: 10 0 0 0;
+    -fx-alignment: center-right;
+}
+
+/* Button Styles */
+.edit-btn {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 5 15;
+    -fx-background-radius: 4;
+    -fx-min-width: 70;
+}
+
+.edit-btn:hover {
+    -fx-background-color: #2980b9;
+}
+
+.delete-btn {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 5 15;
+    -fx-background-radius: 4;
+    -fx-min-width: 70;
+}
+
+.delete-btn:hover {
+    -fx-background-color: #c0392b;
+}
+
+.action-btn {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 20;
+    -fx-background-radius: 5;
+}
+
+.action-btn:hover {
+    -fx-background-color: #2980b9;
+}
+
+.cancel-btn {
+    -fx-background-color: #95a5a6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 20;
+    -fx-background-radius: 5;
+}
+
+.cancel-btn:hover {
+    -fx-background-color: #7f8c8d;
+}
+
+/* Search and Filter Styles */
+.search-field {
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-border-color: #bdc3c7;
+    -fx-border-width: 1;
+    -fx-padding: 7 15;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 3, 0.2, 0, 1);
+}
+
+.search-field:focused {
+    -fx-border-color: #3498db;
+    -fx-border-width: 1.5;
+}
+
+.filter-combo {
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-border-color: #bdc3c7;
+    -fx-border-width: 1;
+    -fx-padding: 5 10;
+    -fx-font-size: 14px;
+    -fx-pref-width: 180;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 3, 0.2, 0, 1);
+}
+
+.filter-combo .list-cell {
+    -fx-padding: 5 10;
+}
+
+.filter-combo .arrow-button {
+    -fx-background-radius: 0 20 20 0;
+}

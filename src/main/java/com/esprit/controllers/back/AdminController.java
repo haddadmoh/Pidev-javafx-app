@@ -1,10 +1,9 @@
-package com.esprit.controllers.Back;
+package com.esprit.controllers.back;
 
 import com.esprit.main.App;
 import com.esprit.models.User;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -48,7 +47,7 @@ public class AdminController {
 
     @FXML
     private void handleViewCategories() {
-        System.out.println("View Categories clicked");
+        loadContent("/views/Back/ViewCategories.fxml");
     }
 
     @FXML
