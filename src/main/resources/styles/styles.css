@@ -119,3 +119,68 @@
 }
 
 /** admin interface end **/
+
+/** add category start **/
+
+.form-container {
+    -fx-padding: 30;
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+    -fx-max-width: 600;
+}
+
+.form-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.text-field, .text-area {
+    -fx-background-radius: 5;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 5;
+}
+
+.text-field:focused, .text-area:focused {
+    -fx-border-color: #3498db;
+}
+
+.action-btn {
+    -fx-background-color: #27ae60;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 20;
+    -fx-background-radius: 5;
+}
+
+.action-btn:hover {
+    -fx-background-color: #2ecc71;
+}
+
+.cancel-btn {
+    -fx-background-color: #95a5a6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 20;
+    -fx-background-radius: 5;
+}
+
+.cancel-btn:hover {
+    -fx-background-color: #7f8c8d;
+}
+
+.message-label {
+    -fx-font-size: 14px;
+    -fx-padding: 5 0;
+}
+
+.message-label.error {
+    -fx-text-fill: #e74c3c;
+}
+
+.message-label.success {
+    -fx-text-fill: #27ae60;
+}
+
+/** add category end **/

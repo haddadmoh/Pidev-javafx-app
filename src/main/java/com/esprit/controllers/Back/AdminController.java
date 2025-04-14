@@ -43,7 +43,7 @@ public class AdminController {
 
     @FXML
     private void handleAddCategory() {
-        System.out.println("Add Categories clicked");
+        loadContent("/views/Back/AddCategory.fxml");
     }
 
     @FXML
