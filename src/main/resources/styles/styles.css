@@ -1,0 +1,121 @@
+.root {
+    -fx-font-family: 'Arial';
+    -fx-base: #ffffff;
+}
+
+/** login start **/
+.login-container {
+    -fx-background-color: #f5f5f5;
+    -fx-padding: 40;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
+}
+
+.login-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+/** login end **/
+
+
+/** patient interface start (with admin log out button) start **/
+.welcome-label {
+    -fx-font-size: 24px;
+    -fx-text-fill: #2c3e50;
+}
+
+.logout-btn {
+    -fx-background-color: #95a5a6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+}
+
+.logout-btn:hover {
+    -fx-background-color: #7f8c8d;
+}
+
+/** patient interface start (with admin log out button) end **/
+
+/** admin interface start **/
+
+.admin-navbar {
+    -fx-background-color: #2c3e50;  /* Lighter blue */
+    -fx-padding: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);
+}
+
+.navbar-title {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.admin-name {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.admin-sidebar {
+    -fx-background-color: #436f91;  /* Even lighter blue */
+    -fx-padding: 20 10;
+    -fx-border-color: transparent #E0E0E0 transparent transparent;
+    -fx-border-width: 0 1 0 0;
+}
+
+.sidebar-header {
+    -fx-text-fill: #f8f9fa;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 10 0;
+}
+
+.menu-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10 15;
+    -fx-border-radius: 0;
+}
+
+.menu-btn:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-cursor: hand;
+}
+
+.submenu {
+    -fx-padding: 5 0 5 25;
+    -fx-border-color: transparent transparent transparent rgba(255, 255, 255, 0.3);
+    -fx-border-width: 1;
+}
+
+.submenu-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #f1f3f5;
+    -fx-font-size: 13px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 8 15;
+    -fx-border-radius: 0;
+}
+
+.submenu-btn:hover {
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dashboard-content {
+    -fx-background-color: white;  /* Clean white background */
+}
+
+.dashboard-welcome {
+    -fx-text-fill: #2c3e50;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+/** admin interface end **/

@@ -66,6 +66,7 @@ public class LoginController {
         }
 
         Scene scene = new Scene(root, App.WINDOW_WIDTH, App.WINDOW_HEIGHT);
+        scene.getStylesheets().add(getClass().getResource("/styles/styles.css").toExternalForm());
         stage.setScene(scene);
     }
 }

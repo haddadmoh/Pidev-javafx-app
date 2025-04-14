@@ -26,9 +26,19 @@ public class AdminController {
         adminNameLabel.setText(user.getUsername());
     }
 
+    private boolean isSubmenuVisible = false;
+
+    public void initialize() {
+        // Hide submenu by default
+        submenu.setVisible(false);
+        submenu.setManaged(false); // This makes it not take up space when hidden
+    }
+
     @FXML
     private void handlePostsManagement() {
-        System.out.println("Posts Management clicked");
+        isSubmenuVisible = !isSubmenuVisible; // Toggle visibility
+        submenu.setVisible(isSubmenuVisible);
+        submenu.setManaged(isSubmenuVisible);
     }
 
     @FXML
@@ -67,6 +77,7 @@ public class AdminController {
         Stage stage = (Stage) adminRoot.getScene().getWindow();
         Parent root = FXMLLoader.load(getClass().getResource("/views/Login.fxml"));
         Scene scene = new Scene(root, App.WINDOW_WIDTH, App.WINDOW_HEIGHT);
+        scene.getStylesheets().add(getClass().getResource("/styles/styles.css").toExternalForm());
         stage.setScene(scene);
     }
 

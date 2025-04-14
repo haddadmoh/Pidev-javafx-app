@@ -15,6 +15,7 @@ public class App extends Application {
         // Load the login screen first
         Parent root = FXMLLoader.load(getClass().getResource("/views/Login.fxml"));
         Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
+        scene.getStylesheets().add(getClass().getResource("/styles/styles.css").toExternalForm());
 
         primaryStage.setTitle("Medical Application");
         primaryStage.setScene(scene);
