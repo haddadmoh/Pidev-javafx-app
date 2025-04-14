@@ -12,11 +12,40 @@
             styleClass="transparent-scroll" fitToWidth="true">
 
     <VBox styleClass="categories-container">
+        <!-- Header section with search and filter -->
+        <VBox spacing="15">
+            <!-- Title and count -->
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="All Categories" styleClass="section-title"/>
+                <Label fx:id="categoryCountLabel" styleClass="count-badge"/>
+            </HBox>
 
-        <!-- Title  -->
-        <HBox alignment="CENTER_LEFT" spacing="10">
-            <Label text="All Categories" styleClass="section-title"/>
-        </HBox>
+            <!-- Search and filter controls -->
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <!-- Search field -->
+                <TextField fx:id="searchField" promptText="Search categories..."
+                           styleClass="search-field" HBox.hgrow="ALWAYS">
+                    <HBox.margin>
+                        <Insets right="10"/>
+                    </HBox.margin>
+                </TextField>
+
+                <!-- Filter combo box -->
+                <ComboBox fx:id="filterComboBox" promptText="Filter by..."
+                          styleClass="filter-combo">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="All Categories"/>
+                            <String fx:value="Most Posts"/>
+                            <String fx:value="Fewest Posts"/>
+                            <String fx:value="Newest First"/>
+                            <String fx:value="Oldest First"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+            </HBox>
+        </VBox>
+
 
         <!-- Categories list -->
         <VBox fx:id="categoriesList" styleClass="categories-list" spacing="15"/>
