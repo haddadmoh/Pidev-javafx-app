@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
+
+<?import java.net.URL?>
+<?import java.lang.String?>
+<VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.esprit.controllers.front.EditPostController"
+      spacing="15" styleClass="edit-post-container"
+      prefWidth="500" prefHeight="600">
+    <stylesheets>
+        <URL value="@/styles/posts.css" />
+    </stylesheets>
+
+    <Label text="Edit Post" styleClass="edit-title"/>
+
+    <VBox spacing="5">
+        <Label text="Title:" styleClass="form-label"/>
+        <TextField fx:id="titleField" styleClass="form-field"/>
+    </VBox>
+
+    <VBox spacing="5">
+        <Label text="Description:" styleClass="form-label"/>
+        <TextArea fx:id="descriptionField" styleClass="form-textarea" wrapText="true"/>
+    </VBox>
+
+    <VBox spacing="5">
+        <Label text="Type:" styleClass="form-label"/>
+        <ComboBox fx:id="typeComboBox" styleClass="form-combo">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Offre"/>
+                    <String fx:value="Demande"/>
+                </FXCollections>
+            </items>
+        </ComboBox>
+    </VBox>
+
+    <VBox spacing="5">
+        <Label text="Category:" styleClass="form-label"/>
+        <ComboBox fx:id="categoryComboBox" styleClass="form-combo"/>
+    </VBox>
+
+    <VBox spacing="5">
+        <Label text="Image:" styleClass="form-label"/>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Button text="Browse..." onAction="#handleImageBrowse" styleClass="browse-button"/>
+            <Label fx:id="imagePathLabel" styleClass="image-path-label"/>
+        </HBox>
+        <ImageView fx:id="imagePreview" fitWidth="300" fitHeight="200" preserveRatio="true"/>
+    </VBox>
+
+    <HBox spacing="15" styleClass="button-container">
+        <Button text="Save Changes" onAction="#handleSave" styleClass="save-button"/>
+        <Button text="Cancel" onAction="#handleCancel" styleClass="cancel-button"/>
+    </HBox>
+</VBox>

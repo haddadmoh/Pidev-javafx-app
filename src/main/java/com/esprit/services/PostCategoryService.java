@@ -113,21 +113,29 @@ public class PostCategoryService implements IService<PostCategory> {
         }
     }
 
-    public PostCategory getById(int id) throws SQLException {
-        String sql = "SELECT * FROM post_category WHERE id = ?";
+    public int getCategoryIdByName(String categoryName) throws SQLException {
+        String sql = "SELECT id FROM post_category WHERE name = ?";
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return new PostCategory(
-                            rs.getInt("id"),
-                            rs.getString("name"),
-                            rs.getString("description"),
-                            rs.getTimestamp("created_at").toLocalDateTime()
-                    );
-                }
+            stmt.setString(1, categoryName);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("id");
             }
         }
-        throw new SQLException("Category not found with ID: " + id);
+        throw new SQLException("Category not found: " + categoryName);
+    }
+
+    public String getCategoryNameById(int categoryId) throws SQLException {
+        String sql = "SELECT name FROM post_category WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, categoryId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("name");
+            }
+        }
+        return "Uncategorized";
     }
 }

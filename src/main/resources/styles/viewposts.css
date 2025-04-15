@@ -1,0 +1,239 @@
+/* Main Container */
+.transparent-scroll {
+    -fx-background: #f8f9fa;
+}
+
+.posts-container {
+    -fx-padding: 20px;
+    -fx-spacing: 15px;
+}
+
+/* Header */
+.section-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.count-badge {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7f8c8d;
+    -fx-padding: 3px 8px;
+    -fx-background-color: #ecf0f1;
+    -fx-background-radius: 10px;
+}
+
+/* Filter Controls */
+.filter-combo {
+    -fx-pref-width: 200px;
+    -fx-background-color: white;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 4px;
+}
+
+/* Posts List */
+.posts-list {
+    -fx-spacing: 15px;
+}
+
+.post-card {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 10, 0, 0, 2);
+    -fx-padding: 15px;
+    -fx-spacing: 10px;
+}
+
+.post-header {
+    -fx-spacing: 10px;
+    -fx-alignment: center-left;
+}
+
+.post-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2d3436;
+}
+
+.post-type-offre {
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+    -fx-background-color: #27ae60;
+    -fx-background-radius: 12px;
+    -fx-padding: 3px 10px;
+}
+
+.post-type-demande {
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+    -fx-background-color: #e74c3c;
+    -fx-background-radius: 12px;
+    -fx-padding: 3px 10px;
+}
+
+.post-meta-row {
+    -fx-spacing: 15px;
+    -fx-alignment: center-left;
+}
+
+.post-category {
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+    -fx-background-color: #3498db;
+    -fx-background-radius: 12px;
+    -fx-padding: 3px 10px;
+}
+
+.post-author {
+    -fx-font-size: 12px;
+    -fx-text-fill: #7f8c8d;
+}
+
+.post-description {
+    -fx-font-size: 14px;
+    -fx-fill: #2d3436;
+    -fx-line-spacing: 5px;
+    -fx-padding: 5px 0;
+}
+
+.post-bottom-row {
+    -fx-alignment: center-right;
+}
+
+.post-date {
+    -fx-font-size: 12px;
+    -fx-text-fill: #7f8c8d;
+    -fx-font-style: italic;
+}
+
+/* Action Buttons */
+.action-buttons {
+    -fx-spacing: 10px;
+    -fx-padding: 10px 0;
+}
+
+.action-btn {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-background-radius: 4px;
+    -fx-padding: 5px 15px;
+}
+
+.action-btn:hover {
+    -fx-background-color: #2980b9;
+}
+
+/* Messages */
+.error-message {
+    -fx-text-fill: #e74c3c;
+}
+
+.empty-message {
+    -fx-text-fill: #7f8c8d;
+    -fx-font-style: italic;
+}
+/* Add these new styles to your existing CSS */
+
+/* Post Card Image */
+.post-image {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+/* Delete Button */
+.delete-btn {
+    -fx-background-color: #e53e3e;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 5 10;
+    -fx-background-radius: 4;
+}
+
+.delete-btn:hover {
+    -fx-background-color: #c53030;
+}
+
+/* Post Actions Row */
+.post-actions {
+    -fx-padding: 10 0 0 0;
+    -fx-alignment: center-right;
+}
+
+/* Image container styling */
+.image-container {
+    -fx-padding: 0 0 10 0;
+}
+
+/* Post image styling */
+.post-image {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-transition: all 0.3s ease;
+}
+
+.post-image:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 8, 0, 0, 3);
+}
+
+/* Make sure cards align properly */
+.post-card {
+    -fx-alignment: top-center;
+    -fx-spacing: 10;
+}
+
+/* Count label style */
+.count-label {
+    -fx-background-color: #e2e8f0;
+    -fx-padding: 3 8;
+    -fx-background-radius: 10;
+    -fx-font-size: 12px;
+}
+/* Filter labels */
+.filter-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #4a5568;
+    -fx-font-weight: bold;
+}
+
+/* Adjust filter controls layout */
+.filter-combo {
+    -fx-pref-width: 150px;
+}
+
+/* Make filter sections align nicely */
+.posts-container > VBox > HBox > VBox {
+    -fx-spacing: 5;
+    -fx-alignment: top-left;
+}
+/**************************/
+/* Action buttons */
+.post-actions {
+    -fx-padding: 10 0 0 0;
+}
+
+.edit-button {
+    -fx-background-color: #4299e1;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 5 15;
+    -fx-background-radius: 4;
+}
+
+.edit-button:hover {
+    -fx-background-color: #3182ce;
+}
+
+.delete-button {
+    -fx-background-color: #e53e3e;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 5 15;
+    -fx-background-radius: 4;
+}
+
+.delete-button:hover {
+    -fx-background-color: #c53030;
+}

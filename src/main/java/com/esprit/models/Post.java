@@ -55,6 +55,9 @@ public class Post {
         this.enabled = enabled;
     }
 
+    public Post() {
+    }
+
     // Getters and Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -85,4 +88,5 @@ public class Post {
         return String.format("Post [id=%d, title='%s', categoryId=%d, authorId=%s, description='%s', type='%s', image='%s']",
                 id, title, categoryId, authorId, description, type, image);
     }
+
 }

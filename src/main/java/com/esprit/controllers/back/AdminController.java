@@ -52,7 +52,7 @@ public class AdminController {
 
     @FXML
     private void handleViewPosts() {
-        System.out.println("View Posts clicked");
+        loadContent("/views/Back/ViewPosts.fxml");
     }
 
     @FXML
@@ -79,6 +79,7 @@ public class AdminController {
         scene.getStylesheets().add(getClass().getResource("/styles/styles.css").toExternalForm());
         stage.setScene(scene);
     }
+
 
     // Method to load content into the center area
     private void loadContent(String fxmlPath) {

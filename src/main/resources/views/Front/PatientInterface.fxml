@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.esprit.controllers.front.PatientController"
+      styleClass="main-container">
+
+    <!-- Navbar -->
+    <HBox alignment="CENTER_LEFT" spacing="20" styleClass="navbar">
+        <!-- App Logo -->
+        <ImageView fitHeight="60" fitWidth="60" preserveRatio="true">
+            <image>
+                <Image url="@/images/logo.png"/>
+            </image>
+        </ImageView>
+
+        <!-- Posts Dropdown Menu -->
+        <MenuButton text="Posts" styleClass="nav-btn">
+            <items>
+                <MenuItem text="Create Post" onAction="#showCreatePostForm"/>
+                <MenuItem text="View Posts" onAction="#showPostsList"/>
+            </items>
+        </MenuButton>
+
+        <!-- Other Nav Items -->
+        <Button text="Products" onAction="#handleProductsClick" styleClass="nav-btn"/>
+        <Button text="Events" onAction="#handleEventsClick" styleClass="nav-btn"/>
+
+        <!-- Spacer -->
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <!-- User Info -->
+        <Label fx:id="usernameLabel" styleClass="username-label"/>
+        <Button text="Logout" fx:id="logoutBtn" onAction="#handleLogout" styleClass="logout-btn"/>
+    </HBox>
+
+    <!-- Content Area -->
+    <StackPane fx:id="contentPane" VBox.vgrow="ALWAYS">
+        <Label fx:id="welcomeLabel" styleClass="welcome-label" text="Welcome to Patient Dashboard"/>
+    </StackPane>
+</VBox>

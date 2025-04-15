@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
+<?import java.net.URL?>
+<?import java.lang.String?>
+<ScrollPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.esprit.controllers.front.PostListController"
+            styleClass="posts-scroll-pane"
+            fitToWidth="true">
+    <stylesheets>
+        <URL value="@/styles/posts.css" />
+    </stylesheets>
+
+    <VBox styleClass="main-container">
+        <!-- Filter Section -->
+        <HBox styleClass="filter-section" spacing="15">
+            <!-- Type Filter -->
+            <VBox spacing="5">
+                <Label text="Type:" styleClass="filter-label"/>
+                <ComboBox fx:id="typeFilterCombo" styleClass="filter-combo">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="All Types"/>
+                            <String fx:value="Offre"/>
+                            <String fx:value="Demande"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+            </VBox>
+
+            <!-- Category Filter -->
+            <VBox spacing="5">
+                <Label text="Category:" styleClass="filter-label"/>
+                <ComboBox fx:id="categoryFilterCombo" styleClass="filter-combo"/>
+            </VBox>
+
+            <!-- Date Sort -->
+            <VBox spacing="5">
+                <Label text="Sort by:" styleClass="filter-label"/>
+                <ComboBox fx:id="dateSortCombo" styleClass="filter-combo">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Newest First"/>
+                            <String fx:value="Oldest First"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+            </VBox>
+        </HBox>
+
+        <!-- Posts Container -->
+        <VBox fx:id="postsContainer" styleClass="posts-container" spacing="15"/>
+    </VBox>
+</ScrollPane>

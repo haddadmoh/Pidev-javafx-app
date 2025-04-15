@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.esprit.controllers.back.AdminController;
-import com.esprit.controllers.back.PatientController;
+import com.esprit.controllers.front.PatientController;
 import com.esprit.main.App;
 import com.esprit.models.User;
 import com.esprit.services.UserService;
@@ -53,7 +53,7 @@ public class LoginController {
         Stage stage = (Stage) buttonsContainer.getScene().getWindow();
         String fxmlFile = user.getRole().equals("admin")
                 ? "/views/Back/AdminInterface.fxml"
-                : "/views/Back/PatientInterface.fxml";
+                : "/views/Front/PatientInterface.fxml";
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
         Parent root = loader.load();
@@ -69,4 +69,5 @@ public class LoginController {
         scene.getStylesheets().add(getClass().getResource("/styles/styles.css").toExternalForm());
         stage.setScene(scene);
     }
+
 }
