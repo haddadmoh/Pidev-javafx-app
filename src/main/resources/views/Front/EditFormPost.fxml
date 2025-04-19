@@ -2,60 +2,60 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.geometry.Insets?>
-<?import javafx.collections.FXCollections?>
-
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
 <?import java.net.URL?>
-<?import java.lang.String?>
+<?import javafx.scene.image.ImageView?>
 <VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.esprit.controllers.front.EditPostController"
-      spacing="15" styleClass="edit-post-container"
-      prefWidth="500" prefHeight="600">
+      styleClass="form-container" spacing="20" alignment="TOP_CENTER"
+      prefWidth="600">
+
     <stylesheets>
-        <URL value="@/styles/posts.css" />
+        <URL value="@/styles/newpost.css" />
     </stylesheets>
 
-    <Label text="Edit Post" styleClass="edit-title"/>
+    <Label text="Edit Post" styleClass="form-title">
+        <font>
+            <Font size="20"/>
+        </font>
+    </Label>
 
-    <VBox spacing="5">
-        <Label text="Title:" styleClass="form-label"/>
-        <TextField fx:id="titleField" styleClass="form-field"/>
-    </VBox>
+    <GridPane hgap="15" vgap="15" alignment="CENTER">
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" hgrow="NEVER" prefWidth="100"/>
+            <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" prefWidth="200"/>
+        </columnConstraints>
+        <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
 
-    <VBox spacing="5">
-        <Label text="Description:" styleClass="form-label"/>
-        <TextArea fx:id="descriptionField" styleClass="form-textarea" wrapText="true"/>
-    </VBox>
+        <!-- Title -->
+        <Label text="Title*:" styleClass="form-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="titleField" promptText="Enter post title" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-    <VBox spacing="5">
-        <Label text="Type:" styleClass="form-label"/>
-        <ComboBox fx:id="typeComboBox" styleClass="form-combo">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="Offre"/>
-                    <String fx:value="Demande"/>
-                </FXCollections>
-            </items>
-        </ComboBox>
-    </VBox>
+        <!-- Description -->
+        <Label text="Description*:" styleClass="form-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextArea fx:id="descriptionField" promptText="Enter post description"
+                  wrapText="true" prefRowCount="4" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-    <VBox spacing="5">
-        <Label text="Category:" styleClass="form-label"/>
-        <ComboBox fx:id="categoryComboBox" styleClass="form-combo"/>
-    </VBox>
+        <!-- Type -->
+        <Label text="Type*:" styleClass="form-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="typeComboBox" promptText="Select type" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-    <VBox spacing="5">
-        <Label text="Image:" styleClass="form-label"/>
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <Button text="Browse..." onAction="#handleImageBrowse" styleClass="browse-button"/>
-            <Label fx:id="imagePathLabel" styleClass="image-path-label"/>
+        <!-- Category -->
+        <Label text="Category*:" styleClass="form-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="categoryComboBox" promptText="Select category" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        <!-- Image -->
+        <Label text="Image:" styleClass="form-label" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <HBox spacing="10" alignment="CENTER_LEFT" GridPane.rowIndex="4" GridPane.columnIndex="1">
+            <Button fx:id="browseButton" text="Browse..." onAction="#handleImageBrowse"/>
+            <Label fx:id="imageNameLabel" text="No image selected" styleClass="image-label"/>
+            <ImageView fx:id="imagePreview" fitWidth="100" fitHeight="100" preserveRatio="true" visible="false"/>
         </HBox>
-        <ImageView fx:id="imagePreview" fitWidth="300" fitHeight="200" preserveRatio="true"/>
-    </VBox>
+    </GridPane>
 
-    <HBox spacing="15" styleClass="button-container">
-        <Button text="Save Changes" onAction="#handleSave" styleClass="save-button"/>
-        <Button text="Cancel" onAction="#handleCancel" styleClass="cancel-button"/>
+    <HBox spacing="20" alignment="CENTER">
+        <Button fx:id="saveButton" text="Save Changes" onAction="#handleSave" styleClass="submit-btn"/>
+        <Button text="Cancel" onAction="#handleCancel" styleClass="cancel-btn"/>
     </HBox>
 </VBox>

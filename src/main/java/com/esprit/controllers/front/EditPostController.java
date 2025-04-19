@@ -20,8 +20,10 @@ public class EditPostController {
     @FXML private TextArea descriptionField;
     @FXML private ComboBox<String> typeComboBox;
     @FXML private ComboBox<PostCategory> categoryComboBox;
-    @FXML private Label imagePathLabel;
+    @FXML private Label imageNameLabel;
     @FXML private ImageView imagePreview;
+    @FXML private Button browseButton;
+    @FXML private Button saveButton;
 
     private Post postToEdit;
     private PostListController postListController;
@@ -39,6 +41,9 @@ public class EditPostController {
     @FXML
     public void initialize() {
         try {
+            // Initialize type combo box
+            typeComboBox.getItems().addAll("Offre", "Demande");
+
             // Initialize category combo box
             List<PostCategory> categories = new PostCategoryService().getAll();
             categoryComboBox.getItems().addAll(categories);
@@ -56,10 +61,8 @@ public class EditPostController {
                     setText(empty || item == null ? "Select Category" : item.getName());
                 }
             });
-        } catch (SQLException e) {
-            showAlert("Error", "Failed to load categories", Alert.AlertType.ERROR);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            showAlert("Error", "Failed to load categories", Alert.AlertType.ERROR);
         }
     }
 
@@ -79,10 +82,12 @@ public class EditPostController {
             if (postToEdit.getImage() != null && !postToEdit.getImage().isEmpty()) {
                 try {
                     imagePath = postToEdit.getImage();
-                    imagePathLabel.setText(new File(imagePath).getName());
-                    imagePreview.setImage(new Image("file:" + imagePath));
+                    File imageFile = new File(imagePath);
+                    imageNameLabel.setText(imageFile.getName());
+                    imagePreview.setImage(new Image(imageFile.toURI().toString()));
+                    imagePreview.setVisible(true);
                 } catch (Exception e) {
-                    imagePathLabel.setText("Image unavailable");
+                    imageNameLabel.setText("Image unavailable");
                 }
             }
         }
@@ -95,11 +100,12 @@ public class EditPostController {
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
         );
-        File selectedFile = fileChooser.showOpenDialog(imagePreview.getScene().getWindow());
+        File selectedFile = fileChooser.showOpenDialog(browseButton.getScene().getWindow());
         if (selectedFile != null) {
             imagePath = selectedFile.getAbsolutePath();
-            imagePathLabel.setText(selectedFile.getName());
+            imageNameLabel.setText(selectedFile.getName());
             imagePreview.setImage(new Image(selectedFile.toURI().toString()));
+            imagePreview.setVisible(true);
         }
     }
 
@@ -127,7 +133,7 @@ public class EditPostController {
                 }
 
                 // Close the window
-                ((Stage) titleField.getScene().getWindow()).close();
+                ((Stage) saveButton.getScene().getWindow()).close();
 
             } catch (SQLException e) {
                 showAlert("Error", "Failed to update post", Alert.AlertType.ERROR);
@@ -137,7 +143,7 @@ public class EditPostController {
 
     @FXML
     private void handleCancel() {
-        ((Stage) titleField.getScene().getWindow()).close();
+        ((Stage) saveButton.getScene().getWindow()).close();
     }
 
     private boolean validateInput() {

@@ -50,8 +50,10 @@ public class ViewPostsController {
 
     private void setupFilters() {
         try {
-
             // Initialize type filter
+            typeFilterComboBox.setItems(FXCollections.observableArrayList(
+                    "All Types", "Offre", "Demande"
+            ));
             typeFilterComboBox.getSelectionModel().selectFirst();
             typeFilterComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
                 try {
@@ -63,8 +65,13 @@ public class ViewPostsController {
 
             // Load all categories for filtering
             allCategories = categoryService.getAll();
+
+            // Create "All Categories" option
+            PostCategory allCategoriesOption = new PostCategory(-1, "All Categories");
+            allCategories.add(0, allCategoriesOption); // Add at beginning
+
             categoryFilterComboBox.setItems(FXCollections.observableArrayList(allCategories));
-            categoryFilterComboBox.getSelectionModel().selectFirst(); // Select "All" option
+            categoryFilterComboBox.getSelectionModel().selectFirst(); // Select "All Categories" by default
 
             // Set cell factory to show category names
             categoryFilterComboBox.setCellFactory(param -> new ListCell<PostCategory>() {
@@ -132,9 +139,9 @@ public class ViewPostsController {
                     .collect(Collectors.toList());
         }
 
-        // Apply category filter
+        // Apply category filter (skip if "All Categories" is selected)
         PostCategory selectedCategory = categoryFilterComboBox.getValue();
-        if (selectedCategory != null) {
+        if (selectedCategory != null && selectedCategory.getId() != -1) {
             filtered = filtered.stream()
                     .filter(post -> post.getCategoryId() == selectedCategory.getId())
                     .collect(Collectors.toList());

@@ -30,6 +30,11 @@ public class PostCategory {
         this.createdAt = createdAt;
     }
 
+    public PostCategory(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     // Getters and Setters
     public int getId() {
         return id;

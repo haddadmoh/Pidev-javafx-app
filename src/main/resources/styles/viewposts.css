@@ -23,12 +23,23 @@
     -fx-background-radius: 10px;
 }
 
-/* Filter Controls */
 .filter-combo {
-    -fx-pref-width: 200px;
-    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
     -fx-border-color: #bdc3c7;
-    -fx-border-radius: 4px;
+    -fx-border-width: 1;
+    -fx-padding: 5 10;
+    -fx-font-size: 14px;
+    -fx-pref-width: 180;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 3, 0.2, 0, 1);
+}
+
+.filter-combo .list-cell {
+    -fx-padding: 5 10;
+}
+
+.filter-combo .arrow-button {
+    -fx-background-radius: 0 20 20 0;
 }
 
 /* Posts List */
@@ -134,14 +145,6 @@
     -fx-font-style: italic;
 }
 /* Add these new styles to your existing CSS */
-
-/* Post Card Image */
-.post-image {
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
-}
-
 /* Delete Button */
 .delete-btn {
     -fx-background-color: #e53e3e;
@@ -237,3 +240,6 @@
 .delete-button:hover {
     -fx-background-color: #c53030;
 }
+
+
+
