@@ -32,7 +32,7 @@
 
                 <!-- Filter combo box -->
                 <ComboBox fx:id="filterComboBox" promptText="Filter by..."
-                          styleClass="filter-combo">
+                          styleClass="filter-combo" VBox.vgrow="ALWAYS" maxWidth="Infinity" >
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="All Categories"/>

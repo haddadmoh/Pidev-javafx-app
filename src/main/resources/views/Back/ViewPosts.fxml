@@ -9,7 +9,7 @@
 <?import java.net.URL?>
 <ScrollPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.esprit.controllers.back.ViewPostsController"
-            styleClass="transparent-scroll" fitToWidth="true">
+            styleClass="transparent-scroll" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
 
     <stylesheets>
         <URL value="@/styles/viewposts.css" />
