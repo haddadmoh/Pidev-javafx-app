@@ -12,7 +12,7 @@
       prefWidth="600">
 
     <stylesheets>
-        <URL value="@/styles/newpost.css" />
+        <URL value="@/styles/Front/newpost.css" />
     </stylesheets>
 
     <Label text="Create New Post" styleClass="form-title">

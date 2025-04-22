@@ -12,7 +12,7 @@
             styleClass="transparent-scroll" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
 
     <stylesheets>
-        <URL value="@/styles/viewposts.css" />
+        <URL value="@/styles/Back/viewposts.css" />
     </stylesheets>
 
     <VBox styleClass="posts-container">

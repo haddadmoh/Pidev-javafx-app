@@ -33,14 +33,16 @@ import java.util.stream.Collectors;
 
 public class PostListController {
     @FXML private VBox postsContainer;
-    @FXML private ComboBox<String> typeFilterCombo;
-    @FXML private ComboBox<PostCategory> categoryFilterCombo;
-    @FXML private ComboBox<String> dateSortCombo;
+    @FXML private Label postsCountLabel;
+    @FXML private ComboBox<PostCategory> categoryFilterComboBox;
+    @FXML private ComboBox<String> dateSortComboBox;
+    @FXML private ComboBox<String> typeFilterComboBox;
 
     private final PostService postService = new PostService();
     private final UserService userService = new UserService();
     private final PostCategoryService categoryService = new PostCategoryService();
     private List<Post> allPosts;
+    private List<PostCategory> allCategories;
     private User currentUser; // To track the logged-in user
 
     // Call this method when setting the controller
@@ -60,86 +62,117 @@ public class PostListController {
     private void setupFilters() {
         try {
             // Initialize type filter
-            typeFilterCombo.setItems(FXCollections.observableArrayList(
+            typeFilterComboBox.setItems(FXCollections.observableArrayList(
                     "All Types", "Offre", "Demande"
             ));
-            typeFilterCombo.getSelectionModel().selectFirst();
+            typeFilterComboBox.getSelectionModel().selectFirst();
+            typeFilterComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+                try {
+                    filterPosts();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
 
-            // Initialize category filter
-            List<PostCategory> categories = categoryService.getAll();
-            categoryFilterCombo.setItems(FXCollections.observableArrayList(categories));
-            categoryFilterCombo.setCellFactory(param -> new ListCell<PostCategory>() {
+            // Load all categories for filtering
+            allCategories = categoryService.getAll();
+
+            // Create "All Categories" option
+            PostCategory allCategoriesOption = new PostCategory(-1, "All Categories");
+            allCategories.add(0, allCategoriesOption); // Add at beginning
+
+            categoryFilterComboBox.setItems(FXCollections.observableArrayList(allCategories));
+            categoryFilterComboBox.getSelectionModel().selectFirst(); // Select "All Categories" by default
+
+            // Set cell factory to show category names
+            categoryFilterComboBox.setCellFactory(param -> new ListCell<PostCategory>() {
                 @Override
                 protected void updateItem(PostCategory item, boolean empty) {
                     super.updateItem(item, empty);
                     setText(empty || item == null ? null : item.getName());
                 }
             });
-            categoryFilterCombo.setButtonCell(new ListCell<PostCategory>() {
+
+            // Set button cell to show selected category name
+            categoryFilterComboBox.setButtonCell(new ListCell<PostCategory>() {
                 @Override
                 protected void updateItem(PostCategory item, boolean empty) {
                     super.updateItem(item, empty);
-                    setText(empty || item == null ? "All Categories" : item.getName());
+                    setText(empty || item == null ? "Filter by category..." : item.getName());
                 }
             });
 
-            // Initialize date sort
-            dateSortCombo.setItems(FXCollections.observableArrayList(
+            // Initialize date sort options
+            dateSortComboBox.setItems(FXCollections.observableArrayList(
                     "Newest First", "Oldest First"
             ));
-            dateSortCombo.getSelectionModel().selectFirst();
+            dateSortComboBox.getSelectionModel().selectFirst();
 
-            // Set up filter change listeners
-            typeFilterCombo.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
-            categoryFilterCombo.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
-            dateSortCombo.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
+            // Set up listeners
+            categoryFilterComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+                try {
+                    filterPosts();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            dateSortComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+                try {
+                    filterPosts();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
 
         } catch (Exception e) {
-            showError("Error initializing filters: " + e.getMessage());
+            showAlert("Error", "Failed to initialize filters: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
     private void loadPosts() {
         try {
             allPosts = postService.getAll();
-            applyFilters();
-        } catch (SQLException e) {
-            showError("Error loading posts: " + e.getMessage());
+            filterPosts();
+        } catch (Exception e) {
+            showMessage("Error loading posts: " + e.getMessage(), "error-message");
             e.printStackTrace();
         }
     }
 
-    private void applyFilters() {
-        if (allPosts == null) return;
+    private void filterPosts() throws SQLException {
+        List<Post> filtered = allPosts;
 
-        List<Post> filteredPosts = allPosts.stream()
-                // Filter by type
-                .filter(post -> {
-                    String selectedType = typeFilterCombo.getValue();
-                    return selectedType == null || selectedType.equals("All Types") ||
-                            post.getType().equalsIgnoreCase(selectedType);
-                })
-                // Filter by category
-                .filter(post -> {
-                    PostCategory selectedCategory = categoryFilterCombo.getValue();
-                    return selectedCategory == null ||
-                            post.getCategoryId() == selectedCategory.getId();
-                })
-                .collect(Collectors.toList());
+        // Apply type filter
+        String selectedType = typeFilterComboBox.getValue();
+        if (selectedType != null && !selectedType.equals("All Types")) {
+            filtered = filtered.stream()
+                    .filter(post -> post.getType().equalsIgnoreCase(selectedType))
+                    .collect(Collectors.toList());
+        }
 
-        // Sort by date
-        String sortOption = dateSortCombo.getValue();
+        // Apply category filter (skip if "All Categories" is selected)
+        PostCategory selectedCategory = categoryFilterComboBox.getValue();
+        if (selectedCategory != null && selectedCategory.getId() != -1) {
+            filtered = filtered.stream()
+                    .filter(post -> post.getCategoryId() == selectedCategory.getId())
+                    .collect(Collectors.toList());
+        }
+
+        // Apply date sorting
+        String sortOption = dateSortComboBox.getValue();
         if (sortOption != null) {
-            filteredPosts.sort(sortOption.equals("Newest First")
+            filtered.sort(sortOption.equals("Newest First")
                     ? Comparator.comparing(Post::getCreatedAt).reversed()
                     : Comparator.comparing(Post::getCreatedAt));
         }
 
-        displayPosts(filteredPosts);
+        displayPosts(filtered);
     }
 
     private void displayPosts(List<Post> posts) {
         postsContainer.getChildren().clear();
+        postsCountLabel.setText(String.valueOf(posts.size()) + " posts");
+        postsCountLabel.getStyleClass().setAll("count-label");
 
         if (posts.isEmpty()) {
             Label noPostsLabel = new Label("No posts found matching your filters");
@@ -304,5 +337,11 @@ public class PostListController {
     private void showError(String message) {
         postsContainer.getChildren().clear();
         postsContainer.getChildren().add(new Label(message));
+    }
+
+    private void showMessage(String text, String styleClass) {
+        Label label = new Label(text);
+        label.getStyleClass().add(styleClass);
+        postsContainer.getChildren().add(label);
     }
 }

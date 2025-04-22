@@ -12,45 +12,55 @@
             styleClass="posts-scroll-pane"
             fitToWidth="true">
     <stylesheets>
-        <URL value="@/styles/posts.css" />
+        <URL value="@/styles/Front/posts.css" />
     </stylesheets>
 
     <VBox styleClass="main-container">
         <!-- Filter Section -->
-        <HBox styleClass="filter-section" spacing="15">
-            <!-- Type Filter -->
-            <VBox spacing="5">
-                <Label text="Type:" styleClass="filter-label"/>
-                <ComboBox fx:id="typeFilterCombo" styleClass="filter-combo">
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="All Types"/>
-                            <String fx:value="Offre"/>
-                            <String fx:value="Demande"/>
-                        </FXCollections>
-                    </items>
-                </ComboBox>
-            </VBox>
+        <VBox spacing="15">
+            <!-- Title and count -->
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="All Posts" styleClass="section-title"/>
+                <Label fx:id="postsCountLabel" styleClass="count-badge"/>
+            </HBox>
 
-            <!-- Category Filter -->
-            <VBox spacing="5">
-                <Label text="Category:" styleClass="filter-label"/>
-                <ComboBox fx:id="categoryFilterCombo" styleClass="filter-combo"/>
-            </VBox>
+            <!-- filter controls -->
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <!-- Type filter -->
+                <VBox spacing="5">
+                    <Label text="Filter by type:" styleClass="filter-label"/>
+                    <ComboBox fx:id="typeFilterComboBox" styleClass="filter-combo">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="All Types"/>
+                                <String fx:value="Offre"/>
+                                <String fx:value="Demande"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                </VBox>
 
-            <!-- Date Sort -->
-            <VBox spacing="5">
-                <Label text="Sort by:" styleClass="filter-label"/>
-                <ComboBox fx:id="dateSortCombo" styleClass="filter-combo">
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="Newest First"/>
-                            <String fx:value="Oldest First"/>
-                        </FXCollections>
-                    </items>
-                </ComboBox>
-            </VBox>
-        </HBox>
+                <!-- Category filter -->
+                <VBox spacing="5">
+                    <Label text="Filter by category:" styleClass="filter-label"/>
+                    <ComboBox fx:id="categoryFilterComboBox" promptText="Select category..."
+                              styleClass="filter-combo"/>
+                </VBox>
+
+                <!-- Date sort -->
+                <VBox spacing="5">
+                    <Label text="Sort by date:" styleClass="filter-label"/>
+                    <ComboBox fx:id="dateSortComboBox" styleClass="filter-combo">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Newest First"/>
+                                <String fx:value="Oldest First"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                </VBox>
+            </HBox>
+        </VBox>
 
         <!-- Posts Container -->
         <VBox fx:id="postsContainer" styleClass="posts-container" spacing="15"/>

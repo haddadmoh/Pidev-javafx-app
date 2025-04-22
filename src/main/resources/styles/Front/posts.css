@@ -196,3 +196,30 @@
 .cancel-button:hover {
     -fx-background-color: #c53030;
 }
+
+.count-badge {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7f8c8d;
+    -fx-padding: 3px 8px;
+    -fx-background-color: #ecf0f1;
+    -fx-background-radius: 10px;
+}
+
+.filter-combo {
+    -fx-min-width: 150px;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-border-color: #bdc3c7;
+    -fx-border-width: 1;
+    -fx-padding: 5 10;
+    -fx-font-size: 14px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 3, 0.2, 0, 1);
+}
+
+.filter-combo .list-cell {
+    -fx-padding: 5 10;
+}
+
+.filter-combo .arrow-button {
+    -fx-background-radius: 0 20 20 0;
+}

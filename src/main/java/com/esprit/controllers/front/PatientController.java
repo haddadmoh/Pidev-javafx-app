@@ -2,7 +2,6 @@ package com.esprit.controllers.front;
 
 import com.esprit.main.App;
 import com.esprit.models.User;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,7 +9,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -40,7 +38,7 @@ public class PatientController {
         Stage stage = (Stage) logoutBtn.getScene().getWindow();
         Parent root = FXMLLoader.load(getClass().getResource("/views/Login.fxml"));
         Scene scene = new Scene(root, App.WINDOW_WIDTH, App.WINDOW_HEIGHT);
-        scene.getStylesheets().add(getClass().getResource("/styles/styles.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/styles/Back/styles.css").toExternalForm());
         stage.setScene(scene);
     }
 

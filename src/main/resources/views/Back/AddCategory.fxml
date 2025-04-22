@@ -12,7 +12,7 @@
       styleClass="form-outer-container">
 
     <stylesheets>
-        <URL value="@/styles/styles.css" />
+        <URL value="@/styles/Back/styles.css" />
     </stylesheets>
 
     <!-- Vertical spacer -->
