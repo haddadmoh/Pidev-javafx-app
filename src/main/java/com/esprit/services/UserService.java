@@ -11,7 +11,7 @@ public class UserService {
 
     public List<User> getAllUsers() throws SQLException {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT id, username, role FROM user";
+        String sql = "SELECT id, username, role, email FROM user";
 
         try (Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -20,7 +20,8 @@ public class UserService {
                 users.add(new User(
                         rs.getInt("id"),
                         rs.getString("username"),
-                        rs.getString("role")
+                        rs.getString("role"),
+                        rs.getString("email")
                 ));
             }
         }
@@ -37,5 +38,36 @@ public class UserService {
             }
         }
         return "Unknown";
+    }
+
+    public User getUserById(int userId) throws SQLException {
+        String query = "SELECT * FROM user WHERE id = ?";
+        User user = null;
+
+        try (PreparedStatement statement = conn.prepareStatement(query)) {
+
+            statement.setInt(1, userId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    user = mapResultSetToUser(resultSet);
+                }
+            }
+        }
+
+        if (user == null) {
+            throw new SQLException("User with ID " + userId + " not found");
+        }
+
+        return user;
+    }
+
+    // Helper method to map ResultSet to User
+    private User mapResultSetToUser(ResultSet resultSet) throws SQLException {
+        User user = new User();
+        user.setId(resultSet.getInt("id"));
+        user.setUsername(resultSet.getString("username"));
+        user.setEmail(resultSet.getString("email"));
+        return user;
     }
 }

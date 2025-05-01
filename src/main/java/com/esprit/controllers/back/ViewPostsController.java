@@ -4,6 +4,7 @@ import com.esprit.models.Post;
 import com.esprit.models.PostCategory;
 import com.esprit.services.PostService;
 import com.esprit.services.PostCategoryService;
+import com.esprit.services.ReactionsService;
 import com.esprit.services.UserService;
 import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
@@ -24,6 +25,7 @@ import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -207,6 +209,12 @@ public class ViewPostsController {
                         .orElse("Unknown Category")));
         metaLabel.getStyleClass().add("category-date");
 
+        // Add reactions row
+        HBox reactionsRow = createReactionsRow(post.getId());
+        reactionsRow.getStyleClass().add("reactions-row");
+        reactionsRow.setSpacing(10);
+        reactionsRow.setAlignment(Pos.CENTER_LEFT);
+
         // Description - styled like category description but keeping your text flow
         TextFlow descriptionFlow = new TextFlow(new Text(post.getDescription()));
         descriptionFlow.getStyleClass().add("category-description");
@@ -274,9 +282,50 @@ public class ViewPostsController {
         bottomRow.getChildren().addAll(spacer, toggleButton, deleteBtn);
 
         // Building card structure (similar to category view but preserving your order)
-        card.getChildren().addAll(titleRow, metaLabel, descriptionFlow, imageContainer, bottomRow);
+        card.getChildren().addAll(titleRow, reactionsRow, metaLabel, descriptionFlow, imageContainer, bottomRow);
 
         return card;
+    }
+    private HBox createReactionsRow(int postId) throws SQLException {
+        HBox reactionsRow = new HBox(10);
+
+        ReactionsService reactionsService = new ReactionsService();
+        // Get reaction counts for this post
+        Map<String, Integer> reactions = reactionsService.getReactionCountsForPost(postId);
+
+        // Display each reaction type with its count
+        for (Map.Entry<String, Integer> entry : reactions.entrySet()) {
+            String reactionType = entry.getKey();
+            int count = entry.getValue();
+
+            // Create reaction display
+            HBox reactionBox = new HBox(5);
+            reactionBox.setAlignment(Pos.CENTER);
+            reactionBox.getStyleClass().addAll("reaction-box", "reaction-" + reactionType.toLowerCase());
+
+            // Add reaction icon (using a label as placeholder)
+            Label iconLabel = new Label(getReactionEmoji(reactionType));
+            iconLabel.getStyleClass().add("reaction-icon");
+
+            // Add count
+            Label countLabel = new Label(String.valueOf(count));
+            countLabel.getStyleClass().add("reaction-count");
+
+            reactionBox.getChildren().addAll(iconLabel, countLabel);
+            reactionsRow.getChildren().add(reactionBox);
+        }
+
+        return reactionsRow;
+    }
+
+    // Helper method to get emoji for reaction types
+    private String getReactionEmoji(String reactionType) {
+        switch (reactionType) {
+            case "LIKE": return "👍";
+            case "LOVE": return "❤️";
+            case "SAD": return "😢";
+            default: return "?";
+        }
     }
 
 

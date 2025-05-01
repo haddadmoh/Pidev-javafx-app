@@ -2,10 +2,14 @@ package com.esprit.controllers.front;
 
 import com.esprit.models.Post;
 import com.esprit.models.PostCategory;
+import com.esprit.models.Reactions;
 import com.esprit.models.User;
 import com.esprit.services.PostCategoryService;
 import com.esprit.services.PostService;
+import com.esprit.services.ReactionsService;
 import com.esprit.services.UserService;
+import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,17 +21,20 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -38,9 +45,13 @@ public class PostListController {
     @FXML private ComboBox<String> dateSortComboBox;
     @FXML private ComboBox<String> typeFilterComboBox;
 
+
     private final PostService postService = new PostService();
     private final UserService userService = new UserService();
     private final PostCategoryService categoryService = new PostCategoryService();
+    private final ReactionsService reactionsService = new ReactionsService();
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm");
+
     private List<Post> allPosts;
     private List<PostCategory> allCategories;
     private User currentUser; // To track the logged-in user
@@ -55,9 +66,15 @@ public class PostListController {
 
     @FXML
     public void initialize() {
-        setupFilters();
-        loadPosts();
+        if (currentUser != null) {
+            setupFilters();
+            loadPosts();
+        }
     }
+
+    /**
+     * Sets up a listener to monitor window width changes and adjust sidebar visibility.
+     */
 
     private void setupFilters() {
         try {
@@ -172,7 +189,6 @@ public class PostListController {
     private void displayPosts(List<Post> posts) {
         postsContainer.getChildren().clear();
         postsCountLabel.setText(String.valueOf(posts.size()) + " posts");
-        postsCountLabel.getStyleClass().setAll("count-label");
 
         if (posts.isEmpty()) {
             Label noPostsLabel = new Label("No posts found matching your filters");
@@ -185,102 +201,530 @@ public class PostListController {
             try {
                 String authorUsername = userService.getUsernameById(post.getAuthorId());
                 String categoryName = categoryService.getCategoryNameById(post.getCategoryId());
-                postsContainer.getChildren().add(
-                        createPostCard(post, authorUsername, categoryName)
-                );
+                Node postCard = createPostCard(post, authorUsername, categoryName);
+
+                // Add a fade-in animation for smooth loading
+                FadeTransition fadeIn = new FadeTransition(Duration.millis(300), postCard);
+                fadeIn.setFromValue(0);
+                fadeIn.setToValue(1.0);
+                fadeIn.play();
+
+                postsContainer.getChildren().add(postCard);
             } catch (SQLException e) {
                 System.err.println("Error loading post details: " + e.getMessage());
             }
         }
     }
 
-    private Node createPostCard(Post post, String authorUsername, String categoryName) {
-        VBox card = new VBox(10);
+    private Node createPostCard(Post post, String authorUsername, String categoryName) throws SQLException {
+        // Main card container
+        VBox card = new VBox();
+        card.setAlignment(Pos.CENTER);
         card.getStyleClass().add("post-card");
-        card.setAlignment(Pos.TOP_LEFT);
         card.setPadding(new Insets(15));
-        card.setMaxWidth(680);
+        card.setSpacing(12);
+        card.setMaxWidth(700);
+        card.setMinWidth(700);
 
-        // Header with title
+        // 1. POST HEADER (Author info, date, type)
+        HBox header = new HBox(10);
+        header.setAlignment(Pos.CENTER_LEFT);
+
+        // Avatar (circular with initial)
+        StackPane avatar = createAvatar(authorUsername);
+
+        // Author details (name and date)
+        VBox authorDetails = new VBox(2);
+        Label nameLabel = new Label(authorUsername);
+        nameLabel.getStyleClass().add("author-name");
+
+        Label dateLabel = new Label(formatPostDate(post.getCreatedAt().format(dateFormatter)));
+        dateLabel.getStyleClass().add("post-date");
+
+        authorDetails.getChildren().addAll(nameLabel, dateLabel);
+
+        // Type badge (right aligned)
+        Label typeLabel = new Label(post.getType());
+        typeLabel.getStyleClass().addAll("post-type-badge", post.getType().toLowerCase() + "-badge");
+
+        // Put together the header with spacer for alignment
+        header.getChildren().addAll(avatar, authorDetails);
+        Region headerSpacer = new Region();
+        HBox.setHgrow(headerSpacer, Priority.ALWAYS);
+        header.getChildren().addAll(headerSpacer, typeLabel);
+
+        // 2. POST CONTENT
+        // Title
         Label titleLabel = new Label(post.getTitle());
         titleLabel.getStyleClass().add("post-title");
+        titleLabel.setWrapText(true);
 
-        // Tags container (type + category)
-        HBox tagsContainer = new HBox(8);
-        tagsContainer.getStyleClass().add("post-tags");
+        // Category
+        Label categoryLabel = new Label("#" + categoryName);
+        categoryLabel.getStyleClass().add("category-label");
 
-        Label typeLabel = new Label(post.getType());
-        typeLabel.getStyleClass().addAll("post-type", post.getType().toLowerCase());
+        // Description with proper text flow
+        TextFlow description = new TextFlow();
+        Text descText = new Text(post.getDescription());
+        descText.getStyleClass().add("post-description");
+        description.getChildren().add(descText);
+        description.setMaxWidth(670);
 
-        Label categoryLabel = new Label(categoryName);
-        categoryLabel.getStyleClass().add("post-category");
+        // 3. IMAGE (if present)
+        Node imageView = createPostImage(post);
 
-        tagsContainer.getChildren().addAll(typeLabel, categoryLabel);
+        // 4. STATUS INDICATOR
+        HBox statusContainer = new HBox(8);
+        statusContainer.setAlignment(Pos.CENTER_LEFT);
+        Circle statusDot = new Circle(5);
+        statusDot.getStyleClass().addAll("status-indicator", "status-" + post.getStatus().toLowerCase());
+        Label statusLabel = new Label(post.getStatus());
+        statusLabel.getStyleClass().add("status-text");
+        statusContainer.getChildren().addAll(statusDot, statusLabel);
 
-        // Header container
-        VBox headerContainer = new VBox(8);
-        headerContainer.getStyleClass().add("post-header");
-        headerContainer.getChildren().addAll(titleLabel, tagsContainer);
+        // 5. SEPARATOR
+        Separator separator = new Separator();
 
-        // Meta info
-        Label metaLabel = new Label(String.format(
-                "Posted by %s • %s",
-                authorUsername,
-                post.getCreatedAt().format(DateTimeFormatter.ofPattern("MMM dd, yyyy 'at' hh:mm a"))
-        ));
-        metaLabel.getStyleClass().add("post-meta");
+        // 6. REACTIONS AND ACTIONS SECTION
+        HBox bottomSection = createBottomSection(post);
 
-        // Description
-        Text description = new Text(post.getDescription());
-        description.getStyleClass().add("post-description");
-        description.setWrappingWidth(650);
+        // Assemble the card
+        card.getChildren().addAll(
+                header,
+                titleLabel,
+                categoryLabel,
+                description,
+                imageView,
+                statusContainer,
+                separator,
+                bottomSection
+        );
 
-        // Image container
-        VBox imageContainer = new VBox();
-        imageContainer.getStyleClass().add("post-image-container");
-        imageContainer.setAlignment(Pos.CENTER);
+        // Add hover effect animation
+        addCardHoverEffect(card);
 
-        if (post.getImage() != null && !post.getImage().isEmpty()) {
-            try {
-                ImageView imageView = new ImageView(new Image("file:" + post.getImage()));
-                imageView.getStyleClass().add("post-image");
-                imageView.setFitWidth(600);
-                imageView.setPreserveRatio(true);
-                imageView.setSmooth(true);
-                imageContainer.getChildren().add(imageView);
-            } catch (Exception e) {
-                Label errorLabel = new Label("[Image unavailable]");
-                errorLabel.getStyleClass().add("post-meta");
-                imageContainer.getChildren().add(errorLabel);
-            }
+        return card;
+    }
+
+    private StackPane createAvatar(String username) {
+        StackPane avatar = new StackPane();
+        avatar.getStyleClass().add("user-avatar");
+
+        // Get first letter of username for avatar
+        String initial = username.substring(0, 1).toUpperCase();
+        Label avatarLabel = new Label(initial);
+        avatarLabel.getStyleClass().add("avatar-text");
+
+        avatar.getChildren().add(avatarLabel);
+        return avatar;
+    }
+
+    private String formatPostDate(String dateStr) {
+        // Format can be enhanced here if needed
+        return dateStr;
+    }
+
+    private Node createPostImage(Post post) {
+        // If no image, return an empty node
+        if (post.getImage() == null || post.getImage().isEmpty()) {
+            return new Region();
         }
 
-        // Action buttons (only show if current user is the author)
+        // Create image container
+        StackPane imageContainer = new StackPane();
+        imageContainer.getStyleClass().add("image-container");
+        imageContainer.setMinHeight(300);
+        imageContainer.setMaxHeight(300);
+        imageContainer.setPadding(new Insets(10, 0, 10, 0));
+
+        try {
+            ImageView imageView = new ImageView(new Image("file:" + post.getImage(), true));
+            imageView.setPreserveRatio(true);
+            imageView.setFitWidth(670);
+            imageView.setFitHeight(300);
+
+            // Add mouse hover zoom effect
+            imageView.setOnMouseEntered(e -> {
+                ScaleTransition scale = new ScaleTransition(Duration.millis(300), imageView);
+                scale.setToX(1.05);
+                scale.setToY(1.05);
+                scale.play();
+            });
+
+            imageView.setOnMouseExited(e -> {
+                ScaleTransition scale = new ScaleTransition(Duration.millis(300), imageView);
+                scale.setToX(1.0);
+                scale.setToY(1.0);
+                scale.play();
+            });
+
+            imageContainer.getChildren().add(imageView);
+            return imageContainer;
+
+        } catch (Exception e) {
+            Label errorLabel = new Label("Image unavailable");
+            errorLabel.getStyleClass().add("image-error");
+            imageContainer.getChildren().add(errorLabel);
+            return imageContainer;
+        }
+    }
+
+    private HBox createBottomSection(Post post) throws SQLException {
+        HBox container = new HBox();
+
+        // 1. Reactions area (left side)
+        HBox reactionsArea = createEnhancedReactionsArea(post);
+
+        // 2. Action buttons (right side - edit/delete)
         HBox actionButtons = new HBox(10);
         actionButtons.setAlignment(Pos.CENTER_RIGHT);
-        actionButtons.getStyleClass().add("post-actions");
 
+        // Only show edit/delete for post owner
         if (currentUser != null && post.getAuthorId() == currentUser.getId()) {
-            Button editButton = new Button("Edit");
-            editButton.getStyleClass().add("edit-button");
+            Button editButton = createActionButton("Edit", "edit-button");
             editButton.setOnAction(e -> handleEditPost(post));
 
-            Button deleteButton = new Button("Delete");
-            deleteButton.getStyleClass().add("delete-button");
+            Button deleteButton = createActionButton("Delete", "delete-button");
             deleteButton.setOnAction(e -> handleDeletePost(post));
 
             actionButtons.getChildren().addAll(editButton, deleteButton);
         }
 
-        card.getChildren().addAll(
-                headerContainer,
-                metaLabel,
-                description,
-                imageContainer,
-                actionButtons
-        );
+        // Add spacer for alignment
+        container.getChildren().add(reactionsArea);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        container.getChildren().addAll(spacer, actionButtons);
 
-        return card;
+        return container;
+    }
+
+    private Button createActionButton(String text, String styleClass) {
+        Button button = new Button(text);
+        button.getStyleClass().add(styleClass);
+
+        // Add hover effect animation
+        button.setOnMouseEntered(e -> {
+            ScaleTransition scale = new ScaleTransition(Duration.millis(150), button);
+            scale.setToX(1.05);
+            scale.setToY(1.05);
+            scale.play();
+        });
+
+        button.setOnMouseExited(e -> {
+            ScaleTransition scale = new ScaleTransition(Duration.millis(150), button);
+            scale.setToX(1.0);
+            scale.setToY(1.0);
+            scale.play();
+        });
+
+        return button;
+    }
+
+    private HBox createEnhancedReactionsArea(Post post) throws SQLException {
+        VBox container = new VBox(5);
+        container.setAlignment(Pos.CENTER_LEFT);
+
+        // Get reaction data for this post
+        Map<String, Integer> reactionCounts = reactionsService.getReactionCountsForPost(post.getId());
+        String userReaction = reactionsService.getUserReactionToPost(post.getId(), currentUser.getId());
+        int totalReactions = reactionCounts.values().stream().mapToInt(Integer::intValue).sum();
+
+        // 1. REACTION SUMMARY (only if there are reactions)
+        if (totalReactions > 0) {
+            HBox reactionSummary = createReactionSummary(reactionCounts, totalReactions);
+            container.getChildren().add(reactionSummary);
+        }
+
+        // 2. REACTION POPUP (hidden by default)
+        HBox reactionPopup = createReactionPopup(post.getId(), userReaction);
+        reactionPopup.setVisible(false);
+        reactionPopup.setOpacity(0);
+        reactionPopup.setTranslateY(-60);
+
+        // 3. REACTION BUTTON
+        Button mainReactionBtn = createReactionButton(userReaction);
+        mainReactionBtn.setOnAction(e -> {
+            // Toggle visibility of reaction popup
+            if (!reactionPopup.isVisible()) {
+                showReactionPopup(reactionPopup);
+            } else {
+                hideReactionPopup(reactionPopup);
+            }
+        });
+
+        // Show popup on hover
+        setupReactionHoverBehavior(mainReactionBtn, reactionPopup);
+
+        // Add both to container
+        container.getChildren().addAll(reactionPopup, mainReactionBtn);
+
+        // Wrap in HBox for layout purposes
+        HBox wrapper = new HBox();
+        wrapper.getChildren().add(container);
+        return wrapper;
+    }
+
+    private HBox createReactionSummary(Map<String, Integer> reactionCounts, int totalReactions) {
+        HBox summary = new HBox(5);
+
+        summary.setAlignment(Pos.CENTER_LEFT);
+        summary.getStyleClass().add("reaction-summary");
+
+        // Create overlapping emoji bubbles for up to 3 reaction types
+        HBox emojiStack = new HBox(-8); // Negative spacing for overlap effect
+        emojiStack.setAlignment(Pos.CENTER_LEFT);
+
+        // Sort reactions by count (highest first) and take top 3
+        List<String> topReactions = reactionCounts.entrySet().stream()
+                .filter(e -> e.getValue() > 0)
+                .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+                .limit(3)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+        // Create bubbles for each reaction type
+        for (String reactionType : topReactions) {
+            StackPane bubble = new StackPane();
+            bubble.getStyleClass().addAll("reaction-bubble", "reaction-" + reactionType.toLowerCase());
+
+            Label emoji = new Label(getEmojiForReaction(reactionType));
+            emoji.getStyleClass().add("bubble-emoji");
+
+            bubble.getChildren().add(emoji);
+            emojiStack.getChildren().add(bubble);
+        }
+
+        // Total reactions count
+        Label countLabel = new Label(Integer.toString(totalReactions));
+        countLabel.getStyleClass().add("reaction-count");
+
+        summary.getChildren().addAll(emojiStack, countLabel);
+        return summary;
+        }
+    private HBox createReactionPopup(int postId, String currentUserReaction) {
+        HBox panel = new HBox(15);
+        panel.getStyleClass().add("reaction-popup-panel");
+        panel.setAlignment(Pos.CENTER);
+
+        // Add temporary background color for visibility
+        panel.setStyle("-fx-background-color: pink;");
+
+        // Create the reaction options
+        StackPane likeOption = createReactionOption("LIKE", "👍", "Like",
+                "LIKE".equals(currentUserReaction), postId);
+        StackPane loveOption = createReactionOption("LOVE", "❤️", "Love",
+                "LOVE".equals(currentUserReaction), postId);
+        StackPane sadOption = createReactionOption("SAD", "😢", "Sad",
+                "SAD".equals(currentUserReaction), postId);
+
+        panel.getChildren().addAll(likeOption, loveOption, sadOption);
+        return panel;
+    }
+
+    private StackPane createReactionOption(String type, String emoji, String tooltip,
+                                           boolean isActive, int postId) {
+        StackPane option = new StackPane();
+        option.getStyleClass().add("reaction-option-container");
+
+
+        // If this is user's current reaction, highlight it
+        if (isActive) {
+            option.getStyleClass().add("active-reaction");
+        }
+
+        // Set tooltip
+        Tooltip tip = new Tooltip(tooltip);
+        Tooltip.install(option, tip);
+
+        // Add emoji
+        Label emojiLabel = new Label(emoji);
+        emojiLabel.getStyleClass().add("reaction-option-emoji");
+        option.getChildren().add(emojiLabel);
+
+        // Add hover animations
+        option.setOnMouseEntered(e -> {
+            ScaleTransition scale = new ScaleTransition(Duration.millis(150), option);
+            scale.setToX(1.3);
+            scale.setToY(1.3);
+
+            TranslateTransition bounce = new TranslateTransition(Duration.millis(150), option);
+            bounce.setByY(-10);
+
+            ParallelTransition animation = new ParallelTransition(scale, bounce);
+            animation.play();
+        });
+
+        option.setOnMouseExited(e -> {
+            ScaleTransition scale = new ScaleTransition(Duration.millis(150), option);
+            scale.setToX(1.0);
+            scale.setToY(1.0);
+
+            TranslateTransition bounce = new TranslateTransition(Duration.millis(150), option);
+            bounce.setByY(10);
+
+            ParallelTransition animation = new ParallelTransition(scale, bounce);
+            animation.play();
+        });
+
+        // Click handler to add/update reaction
+        option.setOnMouseClicked(e -> {
+            try {
+                // Click animation
+                ScaleTransition scaleDown = new ScaleTransition(Duration.millis(80), option);
+                scaleDown.setToX(0.9);
+                scaleDown.setToY(0.9);
+
+                ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100), option);
+                scaleUp.setToX(1.3);
+                scaleUp.setToY(1.3);
+
+                SequentialTransition clickAnim = new SequentialTransition(scaleDown, scaleUp);
+
+                clickAnim.setOnFinished(event -> {
+                    try {
+                        // Add or update reaction
+                        Reactions reaction = new Reactions(postId, currentUser.getId(), type);
+                        reactionsService.addReaction(reaction);
+
+                        // Refresh posts to update UI
+                        loadPosts();
+                    } catch (SQLException ex) {
+                        showAlert("Error", "Failed to add reaction: " + ex.getMessage(), Alert.AlertType.ERROR);
+                    }
+                });
+
+                clickAnim.play();
+            } catch (Exception ex) {
+                showAlert("Error", "Failed to record reaction: " + ex.getMessage(), Alert.AlertType.ERROR);
+            }
+        });
+
+        return option;
+    }
+
+    private Button createReactionButton(String userReaction) {
+        Button button = new Button();
+        button.getStyleClass().add("reaction-main-button");
+        button.setStyle("-fx-background-color: pink;");
+
+        // Create content with emoji + text
+        HBox content = new HBox(8);
+        content.setAlignment(Pos.CENTER);
+
+        // Get appropriate emoji and text based on user's reaction
+        String emoji = userReaction != null ? getEmojiForReaction(userReaction) : "👍";
+        String text = userReaction != null ? getLabelForReaction(userReaction) : "Like";
+
+        Label emojiLabel = new Label(emoji);
+        emojiLabel.getStyleClass().add("reaction-button-emoji");
+
+        Label textLabel = new Label(text);
+        textLabel.getStyleClass().add("reaction-button-text");
+
+        // If user has already reacted, add special styling
+        if (userReaction != null) {
+            button.getStyleClass().add("reacted-" + userReaction.toLowerCase());
+            textLabel.getStyleClass().add("reacted-text-" + userReaction.toLowerCase());
+        }
+
+        content.getChildren().addAll(emojiLabel, textLabel);
+        button.setGraphic(content);
+
+        return button;
+    }
+
+    private void setupReactionHoverBehavior(Button mainButton, HBox reactionPopup) {
+        final boolean[] isOverPanel = {false};
+
+        // Show popup when mouse enters main button
+        mainButton.setOnMouseEntered(e -> {
+            showReactionPopup(reactionPopup);
+        });
+
+        // Track when mouse is over popup panel
+        reactionPopup.setOnMouseEntered(e -> {
+            isOverPanel[0] = true;
+        });
+
+        reactionPopup.setOnMouseExited(e -> {
+            isOverPanel[0] = false;
+            hideReactionPopup(reactionPopup);
+        });
+
+        // Hide popup when leaving button (with delay to check if moved to popup)
+        mainButton.setOnMouseExited(e -> {
+            PauseTransition delay = new PauseTransition(Duration.millis(100));
+            delay.setOnFinished(event -> {
+                if (!isOverPanel[0]) {
+                    hideReactionPopup(reactionPopup);
+                }
+            });
+            delay.play();
+        });
+    }
+
+    private void showReactionPopup(HBox popup) {
+        popup.setVisible(true);
+
+        // Animation to show popup
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(200), popup);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1.0);
+
+        TranslateTransition slideUp = new TranslateTransition(Duration.millis(200), popup);
+        slideUp.setFromY(-50);
+        slideUp.setToY(-70);
+
+        ParallelTransition showAnim = new ParallelTransition(fadeIn, slideUp);
+        showAnim.play();
+    }
+
+    private void hideReactionPopup(HBox popup) {
+        // Animation to hide popup
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(200), popup);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0);
+
+        TranslateTransition slideDown = new TranslateTransition(Duration.millis(200), popup);
+        slideDown.setFromY(-70);
+        slideDown.setToY(-50);
+
+        ParallelTransition hideAnim = new ParallelTransition(fadeOut, slideDown);
+        hideAnim.setOnFinished(event -> popup.setVisible(false));
+        hideAnim.play();
+    }
+
+    private String getEmojiForReaction(String reaction) {
+        if (reaction == null) return "👍"; // Default
+
+        switch (reaction) {
+            case "LIKE": return "👍";
+            case "LOVE": return "❤️";
+            case "SAD": return "😢";
+            default: return "👍";
+        }
+    }
+
+    private String getLabelForReaction(String reaction) {
+        if (reaction == null) return "Like"; // Default
+
+        switch (reaction) {
+            case "LIKE": return "Like";
+            case "LOVE": return "Love";
+            case "SAD": return "Sad";
+            default: return "Like";
+        }
+    }
+
+    private void addCardHoverEffect(VBox card) {
+        card.setOnMouseEntered(e -> {
+            card.getStyleClass().add("post-card-hover");
+        });
+
+        card.setOnMouseExited(e -> {
+            card.getStyleClass().remove("post-card-hover");
+        });
     }
 
     private void handleEditPost(Post post) {
@@ -293,10 +737,21 @@ public class PostListController {
             controller.setPostToEdit(post);
             controller.setPostListController(this); // For refreshing after edit
 
+            // Show in modal dialog
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Edit Post");
             stage.setScene(new Scene(root));
+
+            // Add some animations
+            stage.setOnShown(e -> {
+                root.setOpacity(0);
+                FadeTransition fadeIn = new FadeTransition(Duration.millis(300), root);
+                fadeIn.setFromValue(0);
+                fadeIn.setToValue(1.0);
+                fadeIn.play();
+            });
+
             stage.showAndWait();
 
         } catch (IOException e) {
@@ -310,11 +765,31 @@ public class PostListController {
         confirmation.setHeaderText("Delete Post");
         confirmation.setContentText("Are you sure you want to delete this post?");
 
+        DialogPane dialogPane = confirmation.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/styles/Front/posts.css").toExternalForm());
+
         Optional<ButtonType> result = confirmation.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                 postService.delete(post);
-                loadPosts(); // Refresh the list
+
+                // Reload posts with animation
+                FadeTransition fadeOut = new FadeTransition(Duration.millis(300), postsContainer);
+                fadeOut.setFromValue(1.0);
+                fadeOut.setToValue(0.3);
+                fadeOut.setOnFinished(e -> {
+                    try {
+                        loadPosts();
+                        FadeTransition fadeIn = new FadeTransition(Duration.millis(300), postsContainer);
+                        fadeIn.setFromValue(0.3);
+                        fadeIn.setToValue(1.0);
+                        fadeIn.play();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                });
+                fadeOut.play();
+
                 showAlert("Success", "Post deleted successfully", Alert.AlertType.INFORMATION);
             } catch (SQLException e) {
                 showAlert("Error", "Failed to delete post", Alert.AlertType.ERROR);
@@ -323,7 +798,18 @@ public class PostListController {
     }
 
     public void refreshPosts() {
-        loadPosts();
+        // Add smooth transition when refreshing
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(150), postsContainer);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.7);
+        fadeOut.setOnFinished(e -> {
+            loadPosts();
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(200), postsContainer);
+            fadeIn.setFromValue(0.7);
+            fadeIn.setToValue(1.0);
+            fadeIn.play();
+        });
+        fadeOut.play();
     }
 
     private void showAlert(String title, String message, Alert.AlertType type) {
@@ -331,12 +817,19 @@ public class PostListController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
+
+        // Apply custom styling
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/styles/Front/posts.css").toExternalForm());
+
         alert.showAndWait();
     }
 
     private void showError(String message) {
         postsContainer.getChildren().clear();
-        postsContainer.getChildren().add(new Label(message));
+        Label errorLabel = new Label(message);
+        errorLabel.getStyleClass().add("error-message");
+        postsContainer.getChildren().add(errorLabel);
     }
 
     private void showMessage(String text, String styleClass) {

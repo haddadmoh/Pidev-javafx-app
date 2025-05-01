@@ -63,6 +63,6 @@
         </VBox>
 
         <!-- Posts Container -->
-        <VBox fx:id="postsContainer" styleClass="posts-container" spacing="15"/>
+        <VBox fx:id="postsContainer" styleClass="posts-container" spacing="15" alignment="CENTER"/>
     </VBox>
 </ScrollPane>

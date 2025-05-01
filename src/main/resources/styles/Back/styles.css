@@ -22,117 +22,130 @@
 
 /** patient interface start (with admin log out button) start **/
 
-/* Dropdown Menu Styles */
-.menu-button {
-    -fx-background-color: transparent;
-    -fx-text-fill: white;
+/* Main Styles */
+.main-container {
+    -fx-background-color: #f5f5f7;
+    -fx-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.menu-button .label {
-    -fx-text-fill: white;
-}
-
-.menu-button:hover {
-    -fx-text-fill: #3498db;
-}
-
-.menu-item {
-    -fx-padding: 5 10;
-}
-
-.menu-item .label {
-    -fx-text-fill: #2c3e50;
-}
-
-/* Form Styles */
-.form-container {
-    -fx-padding: 20;
+/* Navbar Styles */
+.navbar {
     -fx-background-color: white;
-    -fx-border-radius: 5;
-    -fx-border-color: #ddd;
+    -fx-padding: 10px 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
 }
 
-.form-title {
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #2c3e50;
-}
-
-/* List View Styles */
-.list-container {
-    -fx-padding: 20;
-    -fx-background-color: white;
-}
-
-.posts-list {
-    -fx-pref-height: 400px;
-}
-
-.section-title {
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-}
-/*------------------------*/
-.nav-btn {
-    -fx-background-color: transparent;
-    -fx-text-fill: white;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
+.nav-item {
+    -fx-padding: 8px 15px;
+    -fx-background-radius: 5px;
     -fx-cursor: hand;
 }
 
-.nav-btn:hover {
+.nav-item:hover {
+    -fx-background-color: #f0f2f5;
+}
+
+.nav-menu-button {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 8px 15px;
+}
+
+.nav-menu-button > .label {
     -fx-text-fill: #3498db;
+    -fx-font-weight: bold;
+}
+
+.nav-menu-button .menu-item {
+    -fx-padding: 8px 15px;
+}
+
+.nav-menu-button .menu-item:hover {
+    -fx-background-color: #f0f2f5;
+}
+
+/* User Profile Styles */
+.user-profile {
+    -fx-padding: 0 10px;
+}
+
+.user-avatar {
+    -fx-background-radius: 50%;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
 }
 
 .username-label {
-    -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-font-size: 18px;
+    -fx-text-fill: #2c3e50;
 }
 
-.logout-btn {
+.user-role {
+    -fx-text-fill: #95a5a6;
+    -fx-font-size: 12px;
+}
+
+/* Notification Badge */
+.notification-badge {
     -fx-background-color: #e74c3c;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-padding: 5 15;
+    -fx-background-radius: 100;
+    -fx-min-width: 18px;
+    -fx-min-height: 18px;
+    -fx-max-width: 18px;
+    -fx-max-height: 18px;
+    -fx-alignment: center;
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 3);
+    -fx-padding: 20px;
+}
+
+.dashboard-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 15, 0, 0, 5);
+    -fx-translate-y: -2px;
+    -fx-transition: all 0.3s ease;
+}
+
+/* Action Buttons */
+.action-button {
+    -fx-background-radius: 4px;
     -fx-cursor: hand;
-    -fx-font-size: 16px;
+    -fx-padding: 8px 15px;
+    -fx-font-weight: bold;
+}
+
+.action-button:hover {
+    -fx-opacity: 0.9;
+}
+
+/* Logout Button */
+.logout-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #e74c3c;
+    -fx-cursor: hand;
+    -fx-background-radius: 4px;
+    -fx-padding: 8px;
 }
 
 .logout-btn:hover {
-    -fx-background-color: #c0392b;
+    -fx-background-color: #ffeeee;
 }
 
+/* Content Pane */
+.content-pane {
+    -fx-padding: 20px;
+}
+
+/* Welcome Screen */
 .welcome-label {
     -fx-font-size: 28px;
-    -fx-text-fill: #2c3e50;
     -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
 }
-
-/* Main container should fill the window */
-.main-container {
-    -fx-background-color: #f5f5f5;
-    -fx-padding: 0;
-    -fx-spacing: 0;
-}
-
-/* Navbar styles - now fixed at top */
-.navbar {
-    -fx-background-color: #2c3e50;
-    -fx-padding: 10 20;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);
-    -fx-alignment: CENTER_LEFT;
-}
-
-/* Content area should fill remaining space */
-.content-area {
-    -fx-padding: 20;
-    -fx-alignment: CENTER;
-    -fx-spacing: 20;
-    -fx-background-color: #f5f5f5;
-}
-/** patient interface start (with admin log out button) end **/
+/** patient interface end (with admin log out button) end **/
 
 /** admin interface start **/
 
@@ -540,4 +553,39 @@
 
 .filter-combo .arrow-button {
     -fx-background-radius: 0 20 20 0;
+}
+
+/* Add these styles to your viewposts.css file */
+
+.reactions-row {
+    -fx-padding: 5 0 5 0;
+    -fx-alignment: center-left;
+}
+
+.reaction-box {
+    -fx-background-color: #f0f2f5;
+    -fx-background-radius: 12;
+    -fx-padding: 3 8 3 8;
+    -fx-alignment: center;
+}
+
+.reaction-like {
+    -fx-background-color: #e7f3ff;
+}
+
+.reaction-love {
+    -fx-background-color: #ffebee;
+}
+
+.reaction-sad {
+    -fx-background-color: #e8eaf6;
+}
+
+.reaction-icon {
+    -fx-font-size: 12;
+}
+
+.reaction-count {
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
 }

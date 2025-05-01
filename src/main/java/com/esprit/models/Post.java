@@ -13,6 +13,12 @@ public class Post {
     private String image;
     private LocalDateTime createdAt;
     private boolean enabled;
+    private String status = "ACTIVE"; // ACTIVE, RESERVED, COMPLETED, EXPIRED
+
+    private int reservedById; // User ID who reserved the post
+
+    private String reservationDate; // When it was reserved
+    private String expirationDate; // When the post expires
 
     // Constructor for new posts
     public Post(int categoryId, int authorId, String title, String description,
@@ -30,7 +36,7 @@ public class Post {
     // Constructor for existing posts from DB
     public Post(int id, int categoryId, int authorId, String title,
                 String description, String type, String image,
-                boolean enabled) {
+                boolean enabled, String status) {
         this.id = id;
         this.categoryId = categoryId;
         this.authorId = authorId;
@@ -39,11 +45,12 @@ public class Post {
         this.type = type;
         this.image = image;
         this.enabled = enabled;
+        this.status = status;
     }
 
     public Post(int id, int categoryId, int authorId, String title,
                 String description, String type, String image,
-                LocalDateTime createdAt, boolean enabled) {
+                LocalDateTime createdAt, boolean enabled, String status) {
         this.id = id;
         this.categoryId = categoryId;
         this.authorId = authorId;
@@ -53,6 +60,7 @@ public class Post {
         this.image = image;
         this.createdAt = createdAt;
         this.enabled = enabled;
+        this.status = status;
     }
 
     public Post() {
@@ -87,6 +95,22 @@ public class Post {
     public String toString() {
         return String.format("Post [id=%d, title='%s', categoryId=%d, authorId=%s, description='%s', type='%s', image='%s']",
                 id, title, categoryId, authorId, description, type, image);
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getReservedById() {
+        return reservedById;
+    }
+
+    public String getReservationDate() {
+        return reservationDate;
     }
 
 }

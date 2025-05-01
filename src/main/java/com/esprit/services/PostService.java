@@ -1,6 +1,7 @@
 package com.esprit.services;
 
 import com.esprit.models.Post;
+import com.esprit.models.User;
 import com.esprit.utils.DatabaseConnection;
 import java.sql.*;
 import java.util.ArrayList;
@@ -88,7 +89,8 @@ public class PostService implements IService<Post> {
                         rs.getString("type"),
                         rs.getString("image"),
                         rs.getTimestamp("created_at").toLocalDateTime(),
-                        rs.getBoolean("enabled")
+                        rs.getBoolean("enabled"),
+                        rs.getString("status")
                 );
                 posts.add(post);
             }
@@ -111,7 +113,8 @@ public class PostService implements IService<Post> {
                             rs.getString("type"),
                             rs.getString("image"),
                             rs.getTimestamp("created_at").toLocalDateTime(),
-                            rs.getBoolean("enabled")
+                            rs.getBoolean("enabled"),
+                            rs.getString("status")
                     );
                 }
             }
@@ -150,7 +153,8 @@ public class PostService implements IService<Post> {
                     rs.getString("type"),
                     rs.getString("image"),
                     rs.getTimestamp("created_at").toLocalDateTime(),
-                    rs.getBoolean("enabled")
+                    rs.getBoolean("enabled"),
+                    rs.getString("status")
             ));
         }
         return posts;
@@ -174,6 +178,80 @@ public class PostService implements IService<Post> {
             e.printStackTrace();
             return 0;
         }
+    }
+
+    public void updatePostStatus(int postId, String status, int reservedById) throws SQLException {
+        String query = "UPDATE post SET status = ?, reserved_by_id = ?, reservation_date = NOW() WHERE id = ?";
+
+        try (PreparedStatement statement = conn.prepareStatement(query)) {
+
+            statement.setString(1, status);
+
+            if (reservedById > 0) {
+                statement.setInt(2, reservedById);
+            } else {
+                statement.setNull(2, java.sql.Types.INTEGER);
+            }
+
+            statement.setInt(3, postId);
+            statement.executeUpdate();
+        }
+    }
+
+    // Method to complete a post
+    public void completePost(int postId) throws SQLException {
+        String query = "UPDATE post SET status = 'COMPLETED' WHERE id = ?";
+
+        try (PreparedStatement statement = conn.prepareStatement(query)) {
+
+            statement.setInt(1, postId);
+            statement.executeUpdate();
+        }
+    }
+
+    // Method to cancel a reservation
+    public void cancelReservation(int postId) throws SQLException {
+        String query = "UPDATE post SET status = 'ACTIVE', reserved_by_id = NULL, reservation_date = NULL WHERE id = ?";
+
+        try (PreparedStatement statement = conn.prepareStatement(query)) {
+
+            statement.setInt(1, postId);
+            statement.executeUpdate();
+        }
+    }
+
+    public List<Post> getUserReservations(int userId) throws SQLException {
+        List<Post> reservations = new ArrayList<>();
+        String query = "SELECT * FROM post WHERE (author_id = ? OR reserved_by_id = ?) AND status = 'RESERVED'";
+
+        try (PreparedStatement statement = conn.prepareStatement(query)) {
+
+            statement.setInt(1, userId);
+            statement.setInt(2, userId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    reservations.add(mapResultSetToPost(resultSet));
+                }
+            }
+        }
+        return reservations;
+    }
+
+    // Helper method to map ResultSet to User
+    private Post mapResultSetToPost(ResultSet resultSet) throws SQLException {
+        Post post = new Post();
+        post.setId(resultSet.getInt("id"));
+        post.setCategoryId(resultSet.getInt("category_id"));
+        post.setAuthorId(resultSet.getInt("author_id"));
+        post.setTitle(resultSet.getString("title"));
+        post.setDescription(resultSet.getString("description"));
+        post.setType(resultSet.getString("type"));
+        post.setImage(resultSet.getString("image"));
+        post.setCreatedAt(resultSet.getTimestamp("created_at").toLocalDateTime());
+        post.setEnabled(resultSet.getBoolean("enabled"));
+        post.setStatus(resultSet.getString("status"));
+        return post;
     }
 
 }

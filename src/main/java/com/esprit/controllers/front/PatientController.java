@@ -2,15 +2,19 @@ package com.esprit.controllers.front;
 
 import com.esprit.main.App;
 import com.esprit.models.User;
+import com.esprit.utils.WindowManager;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
 
 import java.io.IOException;
 
@@ -30,16 +34,6 @@ public class PatientController {
 
     private void updateUI() {
         usernameLabel.setText(currentUser.getUsername());
-    }
-
-    @FXML
-    private void handleLogout() throws Exception {
-        // Return to log in screen
-        Stage stage = (Stage) logoutBtn.getScene().getWindow();
-        Parent root = FXMLLoader.load(getClass().getResource("/views/Login.fxml"));
-        Scene scene = new Scene(root, App.WINDOW_WIDTH, App.WINDOW_HEIGHT);
-        scene.getStylesheets().add(getClass().getResource("/styles/Back/styles.css").toExternalForm());
-        stage.setScene(scene);
     }
 
     @FXML
@@ -67,6 +61,27 @@ public class PatientController {
     }
 
     @FXML
+    private void handleLogout(ActionEvent event) throws Exception {
+        // Get the stage
+        Stage stage;
+        if (event.getSource() instanceof MenuItem menuItem) {
+            stage = (Stage) menuItem.getParentPopup().getOwnerNode().getScene().getWindow();
+        } else {
+            stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+        }
+
+        // Load the login view
+        Parent root = FXMLLoader.load(getClass().getResource("/views/Login.fxml"));
+
+        // Use the WindowManager to change scene
+        WindowManager.changeScene(
+                stage,
+                root,
+                getClass().getResource("/styles/Back/styles.css").toExternalForm()
+        );
+    }
+
+    @FXML
     private void showPostsList() {
         loadContent("/views/Front/PostList.fxml");
     }
@@ -90,8 +105,11 @@ public class PatientController {
             // Clear existing content and add new content
             contentPane.getChildren().setAll(content);
 
-            PostListController controller = loader.getController();
-            controller.setCurrentUser(currentUser);
+            // Only set the current user if the controller is PostListController
+            if (loader.getController() instanceof PostListController) {
+                PostListController controller = loader.getController();
+                controller.setCurrentUser(currentUser);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -99,6 +117,4 @@ public class PatientController {
             contentPane.getChildren().setAll(new Label("Failed to load: " + fxmlPath));
         }
     }
-
-
 }

@@ -21,6 +21,12 @@
         </font>
     </Label>
 
+    <!-- Status indicators placed above the form -->
+    <HBox alignment="CENTER" spacing="10">
+        <ProgressIndicator fx:id="progressIndicator" visible="false" />
+        <Label fx:id="statusLabel" visible="false" styleClass="status-label"/>
+    </HBox>
+
     <GridPane hgap="15" vgap="15" alignment="CENTER">
         <columnConstraints>
             <ColumnConstraints halignment="RIGHT" hgrow="NEVER" prefWidth="100"/>
