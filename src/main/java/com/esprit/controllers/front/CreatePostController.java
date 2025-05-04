@@ -43,6 +43,10 @@ public class CreatePostController {
         this.currentUserId = userId;
     }
 
+    public void setPostListController(PostListController controller) {
+        this.postListController = controller;
+    }
+
     @FXML
     public void initialize() {
         // Initialize services
@@ -254,6 +258,7 @@ public class CreatePostController {
                 newPost.setImage(selectedImageFile != null ? selectedImageFile.getAbsolutePath() : null);
                 newPost.setCreatedAt(LocalDateTime.now());
                 newPost.setEnabled(true);
+                newPost.setStatus("active");
 
                 // Save to database
                 postService.add(newPost);

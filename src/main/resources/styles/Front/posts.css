@@ -457,3 +457,44 @@
     -fx-effect: none;
     -fx-background-color: white;
 }
+
+/* Add these CSS styles to your posts.css file */
+
+.options-button {
+    -fx-background-color: transparent;
+    -fx-padding: 5px;
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #555;
+    -fx-cursor: hand;
+}
+
+.options-button:hover {
+    -fx-background-color: #f0f0f0;
+    -fx-background-radius: 50%;
+}
+
+.options-menu {
+    -fx-background-color: white;
+    -fx-background-radius: 4px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 4px;
+    -fx-padding: 5px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 3);
+}
+
+.menu-option {
+    -fx-background-color: transparent;
+    -fx-padding: 8px 15px 8px 10px;
+    -fx-cursor: hand;
+}
+
+.menu-option:hover {
+    -fx-background-color: #f0f0f0;
+    -fx-background-radius: 4px;
+}
+
+.menu-option-text {
+    -fx-font-size: 13px;
+    -fx-text-fill: #333;
+}

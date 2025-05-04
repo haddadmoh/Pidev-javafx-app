@@ -17,7 +17,7 @@ public class PostService implements IService<Post> {
 
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, post.getCategoryId());
-            stmt.setInt( 2, post.getAuthorId());
+            stmt.setInt(2, post.getAuthorId());
             stmt.setString(3, post.getTitle());
             stmt.setString(4, post.getDescription());
             stmt.setString(5, post.getType());
@@ -57,6 +57,38 @@ public class PostService implements IService<Post> {
         }
     }
 
+    public void updateStatus(int postId, String status) throws SQLException {
+        // Prepare SQL statement for updating just the status
+        String sql = "UPDATE post SET status = ? WHERE id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, status);
+            stmt.setInt(2, postId);
+
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("Updating post status failed, no rows affected.");
+            }
+        }
+    }
+
+    public void updatePostVisibility(int postId, int visibility) throws SQLException {
+        // Prepare SQL statement for updating just the status
+        String sql = "UPDATE post SET Enabled = ? WHERE id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, visibility);
+            stmt.setInt(2, postId);
+
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("Updating post status failed, no rows affected.");
+            }
+        }
+    }
+
     @Override
     public void delete(Post post) throws SQLException {
         String sql = "DELETE FROM post WHERE id=?";
@@ -76,9 +108,19 @@ public class PostService implements IService<Post> {
         List<Post> posts = new ArrayList<>();
         String sql = "SELECT * FROM post ORDER BY created_at DESC";
 
+        return getPosts(posts, sql);
+    }
+
+    public List<Post> getAllByEnabled() throws SQLException {
+        List<Post> posts = new ArrayList<>();
+        String sql = "SELECT * FROM post WHERE enabled = 1 ORDER BY created_at DESC";
+
+        return getPosts(posts, sql);
+    }
+
+    private List<Post> getPosts(List<Post> posts, String sql) throws SQLException {
         try (Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-
             while (rs.next()) {
                 Post post = new Post(
                         rs.getInt("id"),
@@ -121,6 +163,7 @@ public class PostService implements IService<Post> {
         }
         throw new SQLException("Post not found with ID: " + id);
     }
+
     public List<Post> getVisiblePosts() throws SQLException {
         String sql = "SELECT * FROM post WHERE enabled = true ORDER BY created_at DESC";
         return getPostsFromQuery(sql);
@@ -180,46 +223,6 @@ public class PostService implements IService<Post> {
         }
     }
 
-    public void updatePostStatus(int postId, String status, int reservedById) throws SQLException {
-        String query = "UPDATE post SET status = ?, reserved_by_id = ?, reservation_date = NOW() WHERE id = ?";
-
-        try (PreparedStatement statement = conn.prepareStatement(query)) {
-
-            statement.setString(1, status);
-
-            if (reservedById > 0) {
-                statement.setInt(2, reservedById);
-            } else {
-                statement.setNull(2, java.sql.Types.INTEGER);
-            }
-
-            statement.setInt(3, postId);
-            statement.executeUpdate();
-        }
-    }
-
-    // Method to complete a post
-    public void completePost(int postId) throws SQLException {
-        String query = "UPDATE post SET status = 'COMPLETED' WHERE id = ?";
-
-        try (PreparedStatement statement = conn.prepareStatement(query)) {
-
-            statement.setInt(1, postId);
-            statement.executeUpdate();
-        }
-    }
-
-    // Method to cancel a reservation
-    public void cancelReservation(int postId) throws SQLException {
-        String query = "UPDATE post SET status = 'ACTIVE', reserved_by_id = NULL, reservation_date = NULL WHERE id = ?";
-
-        try (PreparedStatement statement = conn.prepareStatement(query)) {
-
-            statement.setInt(1, postId);
-            statement.executeUpdate();
-        }
-    }
-
     public List<Post> getUserReservations(int userId) throws SQLException {
         List<Post> reservations = new ArrayList<>();
         String query = "SELECT * FROM post WHERE (author_id = ? OR reserved_by_id = ?) AND status = 'RESERVED'";
@@ -254,4 +257,15 @@ public class PostService implements IService<Post> {
         return post;
     }
 
+    public String getPostNameById(int postId) throws SQLException {
+        String sql = "SELECT title FROM post WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, postId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("title");
+            }
+        }
+        return "invalid";
+    }
 }

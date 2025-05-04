@@ -192,7 +192,6 @@ public class ViewPostsController {
         titleLabel.setWrapText(true);
 
         Label typeLabel = new Label(post.getType());
-        // Keep your original type styling classes
         typeLabel.getStyleClass().add("post-type-" + post.getType().toLowerCase());
 
         titleRow.getChildren().addAll(titleLabel, typeLabel);
@@ -220,7 +219,7 @@ public class ViewPostsController {
         descriptionFlow.getStyleClass().add("category-description");
         descriptionFlow.setMaxWidth(Double.MAX_VALUE);
 
-        // Image Container - PRESERVING YOUR EXACT IMPLEMENTATION
+        // Image Container
         StackPane imageContainer = new StackPane();
         imageContainer.getStyleClass().add("image-container");
         imageContainer.setVisible(false);
@@ -231,7 +230,6 @@ public class ViewPostsController {
                 ImageView imageView = new ImageView();
                 Image image = new Image(new File(post.getImage()).toURI().toString());
 
-                // Your original image sizing logic preserved exactly
                 double maxWidth = 300;
                 double maxHeight = 200;
                 double ratio = Math.min(
@@ -257,14 +255,20 @@ public class ViewPostsController {
             imageContainer.getChildren().add(noImageLabel);
         }
 
-        // Bottom Row - styled like category actions but keeping your toggle button
+        // Bottom Row - add visibility toggle button
         HBox bottomRow = new HBox();
         bottomRow.getStyleClass().add("action-buttons");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // Keeping your original toggle button implementation
+        // Visibility toggle button
+        Button visibilityBtn = new Button(post.isEnabled() ? "Hide Post" : "Show Post");
+        visibilityBtn.getStyleClass().add("visibility-btn");
+        visibilityBtn.getStyleClass().add(post.isEnabled() ? "post-visible" : "post-hidden");
+        visibilityBtn.setOnAction(e -> togglePostVisibility(post, visibilityBtn));
+
+        // More details toggle button
         Button toggleButton = new Button("More Details");
         toggleButton.getStyleClass().add("toggle-button");
         toggleButton.setOnAction(e -> {
@@ -274,17 +278,38 @@ public class ViewPostsController {
             toggleButton.setText(visible ? "Hide Details" : "More Details");
         });
 
-        // Delete button styled like category view
+        // Delete button
         Button deleteBtn = new Button("Delete");
         deleteBtn.getStyleClass().add("delete-btn");
         deleteBtn.setOnAction(e -> handleDeletePost(post));
 
-        bottomRow.getChildren().addAll(spacer, toggleButton, deleteBtn);
+        bottomRow.getChildren().addAll(spacer, visibilityBtn, toggleButton, deleteBtn);
 
-        // Building card structure (similar to category view but preserving your order)
+        // Building card structure
         card.getChildren().addAll(titleRow, reactionsRow, metaLabel, descriptionFlow, imageContainer, bottomRow);
 
         return card;
+    }
+
+    private void togglePostVisibility(Post post, Button visibilityBtn) {
+        try {
+            // Toggle the enabled status
+            boolean newStatus = !post.isEnabled();
+            post.setEnabled(newStatus);
+
+            // Update the post in the database
+            postService.update(post);
+
+            // Update the button text and style
+            visibilityBtn.setText(newStatus ? "Hide Post" : "Show Post");
+            visibilityBtn.getStyleClass().removeAll("post-visible", "post-hidden");
+            visibilityBtn.getStyleClass().add(newStatus ? "post-visible" : "post-hidden");
+
+            // Show confirmation message
+            showAlert("Success", "Post visibility updated successfully", Alert.AlertType.INFORMATION);
+        } catch (SQLException e) {
+            showAlert("Error", "Failed to update post visibility: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
     }
     private HBox createReactionsRow(int postId) throws SQLException {
         HBox reactionsRow = new HBox(10);

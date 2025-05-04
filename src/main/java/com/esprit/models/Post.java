@@ -13,7 +13,7 @@ public class Post {
     private String image;
     private LocalDateTime createdAt;
     private boolean enabled;
-    private String status = "ACTIVE"; // ACTIVE, RESERVED, COMPLETED, EXPIRED
+    private String status; // ACTIVE, RESERVED, COMPLETED, EXPIRED
 
     private int reservedById; // User ID who reserved the post
 
@@ -22,7 +22,7 @@ public class Post {
 
     // Constructor for new posts
     public Post(int categoryId, int authorId, String title, String description,
-                String type, String image, boolean enabled) {
+                String type, String image, boolean enabled, String status) {
         this.categoryId = categoryId;
         this.authorId = authorId;
         this.title = title;
@@ -31,6 +31,7 @@ public class Post {
         this.image = image;
         this.createdAt = LocalDateTime.now();
         this.enabled = enabled;
+        this.status = status;
     }
 
     // Constructor for existing posts from DB

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.esprit.controllers.front.ChatWindowController">
+    <top>
+        <HBox alignment="CENTER" prefHeight="60.0" spacing="10.0" style="-fx-background-color: #f0f0f0;" BorderPane.alignment="CENTER">
+            <children>
+                <Label fx:id="chatTitleLabel" text="Chat" textFill="#333333">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+                <Label fx:id="statusLabel" text="Status: Open" textFill="#2e7d32">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+            </children>
+            <padding>
+                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+            </padding>
+        </HBox>
+    </top>
+    <center>
+        <ListView fx:id="messagesListView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </BorderPane.margin>
+        </ListView>
+    </center>
+    <bottom>
+        <VBox spacing="10.0" BorderPane.alignment="CENTER">
+            <children>
+                <TextArea fx:id="messageInput" prefHeight="70.0" promptText="Type your message here...">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </TextArea>
+                <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#handleCancelConversation" style="-fx-background-color: #f44336;" text="Cancel" textFill="WHITE">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Button>
+                                <Button fx:id="validateButton" mnemonicParsing="false" onAction="#handleValidateConversation" style="-fx-background-color: #4caf50;" text="Validate" textFill="WHITE">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Button>
+                            </children>
+                        </HBox>
+                        <Button fx:id="sendButton" defaultButton="true" mnemonicParsing="false" onAction="#handleSendMessage" prefHeight="35.0" prefWidth="100.0" style="-fx-background-color: #2196f3;" text="Send" textFill="WHITE">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Button>
+                    </children>
+                </HBox>
+            </children>
+            <padding>
+                <Insets bottom="15.0" left="15.0" right="15.0" top="5.0" />
+            </padding>
+        </VBox>
+    </bottom>
+</BorderPane>

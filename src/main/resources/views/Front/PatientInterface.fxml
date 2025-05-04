@@ -73,6 +73,16 @@
             <Label fx:id="usernameLabel" styleClass="username-label"/>
         </HBox>
 
+        <Button text="Messages" fx:id="messagesBtn" onAction="#handleMessages" styleClass="logout-btn">
+            <graphic>
+                <ImageView fitHeight="16" fitWidth="16">
+                    <image>
+                        <Image url="@/images/8.png"/>
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+
         <Button text="Logout" fx:id="logoutBtn" onAction="#handleLogout" styleClass="logout-btn">
             <graphic>
                 <ImageView fitHeight="16" fitWidth="16">

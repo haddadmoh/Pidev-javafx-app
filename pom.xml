@@ -74,6 +74,26 @@
         <version>3.0.0</version>
     </dependency>
 
+    <dependency>
+        <groupId>org.fxyz3d</groupId>
+        <artifactId>fxyz3d</artifactId>
+        <version>0.5.0</version>
+    </dependency>
+
+    <!-- For HTTP requests to conversion API -->
+    <dependency>
+        <groupId>com.squareup.okhttp3</groupId>
+        <artifactId>okhttp</artifactId>
+        <version>4.9.3</version>
+    </dependency>
+
+    <!-- For 3D rendering -->
+    <dependency>
+        <groupId>org.fxyz3d</groupId>
+        <artifactId>fxyz3d</artifactId>
+        <version>0.5.0</version>
+    </dependency>
+
 </dependencies>
 
 <build>

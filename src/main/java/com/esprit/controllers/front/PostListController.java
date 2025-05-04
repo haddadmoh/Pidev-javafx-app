@@ -1,32 +1,32 @@
 package com.esprit.controllers.front;
 
-import com.esprit.models.Post;
-import com.esprit.models.PostCategory;
-import com.esprit.models.Reactions;
-import com.esprit.models.User;
-import com.esprit.services.PostCategoryService;
-import com.esprit.services.PostService;
-import com.esprit.services.ReactionsService;
-import com.esprit.services.UserService;
+import com.esprit.models.*;
+import com.esprit.services.*;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Modality;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 
 public class PostListController {
     @FXML private VBox postsContainer;
@@ -148,7 +149,7 @@ public class PostListController {
 
     private void loadPosts() {
         try {
-            allPosts = postService.getAll();
+            allPosts = postService.getAllByEnabled();
             filterPosts();
         } catch (Exception e) {
             showMessage("Error loading posts: " + e.getMessage(), "error-message");
@@ -251,7 +252,16 @@ public class PostListController {
         header.getChildren().addAll(avatar, authorDetails);
         Region headerSpacer = new Region();
         HBox.setHgrow(headerSpacer, Priority.ALWAYS);
-        header.getChildren().addAll(headerSpacer, typeLabel);
+        header.getChildren().addAll(headerSpacer);
+
+        // Add type label
+        header.getChildren().add(typeLabel);
+
+        // Add the options menu (three dots) - only for post owner
+        if (currentUser != null && post.getAuthorId() == currentUser.getId()) {
+            Button optionsButton = createOptionsButton(post);
+            header.getChildren().add(optionsButton);
+        }
 
         // 2. POST CONTENT
         // Title
@@ -304,6 +314,94 @@ public class PostListController {
         addCardHoverEffect(card);
 
         return card;
+    }
+
+    // Create the three dots options menu button
+    private Button createOptionsButton(Post post) {
+        // Create the options button (three dots)
+        Button optionsButton = new Button("⋮"); // Unicode character for vertical ellipsis
+        optionsButton.getStyleClass().add("options-button");
+
+        // Style the button
+        optionsButton.setStyle("-fx-background-color: transparent; -fx-font-size: 25px; -fx-font-weight: bold;");
+
+        // Create options menu popup
+        optionsButton.setOnAction(e -> {
+            showOptionsMenu(optionsButton, post);
+        });
+
+        return optionsButton;
+    }
+
+    // Show the options menu with Edit and Delete options
+    private void showOptionsMenu(Button optionsButton, Post post) {
+        // Create the popup menu
+        VBox optionsMenu = new VBox(5);
+        optionsMenu.getStyleClass().add("options-menu");
+        optionsMenu.setStyle("-fx-background-color: white; -fx-border-color: #e0e0e0; " +
+                "-fx-border-radius: 4px; -fx-padding: 5px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 3);");
+
+        // Create menu items without icons
+        HBox editOption = createMenuOption("Edit", e -> {
+            handleEditPost(post);
+        });
+
+        HBox deleteOption = createMenuOption("Delete", e -> {
+            handleDeletePost(post);
+        });
+
+        // Add menu items to the container
+        optionsMenu.getChildren().addAll(editOption, deleteOption);
+
+        // Create and show the popup
+        Popup popup = new Popup();
+        popup.setAutoHide(true); // Close when clicked outside
+        popup.getContent().add(optionsMenu);
+
+        // Position the popup next to the button
+        Node node = optionsButton;
+        Window window = node.getScene().getWindow();
+
+        // Calculate position (right below the button)
+        Point2D point = node.localToScreen(node.getBoundsInLocal().getMaxX() - 100,
+                node.getBoundsInLocal().getMaxY());
+
+        popup.show(window, point.getX(), point.getY());
+
+        // Add animation for smooth appearance
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(200), optionsMenu);
+        fadeIn.setFromValue(0.5);
+        fadeIn.setToValue(1.0);
+        fadeIn.play();
+    }
+
+    // Create a menu option without icon
+    private HBox createMenuOption(String text, EventHandler<MouseEvent> handler) {
+        HBox option = new HBox(10);
+        option.setPadding(new Insets(8, 15, 8, 10));
+        option.setAlignment(Pos.CENTER_LEFT);
+
+        // Set style and hover effects
+        option.setStyle("-fx-background-color: transparent;");
+        option.setCursor(Cursor.HAND);
+
+        // Create just the text label
+        Label textLabel = new Label(text);
+        option.getChildren().add(textLabel);
+
+        // Add hover effect
+        option.setOnMouseEntered(e -> {
+            option.setStyle("-fx-background-color: #f0f0f0;");
+        });
+
+        option.setOnMouseExited(e -> {
+            option.setStyle("-fx-background-color: transparent;");
+        });
+
+        // Set the action handler
+        option.setOnMouseClicked(handler);
+
+        return option;
     }
 
     private StackPane createAvatar(String username) {
@@ -375,50 +473,13 @@ public class PostListController {
         // 1. Reactions area (left side)
         HBox reactionsArea = createEnhancedReactionsArea(post);
 
-        // 2. Action buttons (right side - edit/delete)
-        HBox actionButtons = new HBox(10);
-        actionButtons.setAlignment(Pos.CENTER_RIGHT);
-
-        // Only show edit/delete for post owner
-        if (currentUser != null && post.getAuthorId() == currentUser.getId()) {
-            Button editButton = createActionButton("Edit", "edit-button");
-            editButton.setOnAction(e -> handleEditPost(post));
-
-            Button deleteButton = createActionButton("Delete", "delete-button");
-            deleteButton.setOnAction(e -> handleDeletePost(post));
-
-            actionButtons.getChildren().addAll(editButton, deleteButton);
-        }
-
         // Add spacer for alignment
         container.getChildren().add(reactionsArea);
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        container.getChildren().addAll(spacer, actionButtons);
+        container.getChildren().addAll(spacer);
 
         return container;
-    }
-
-    private Button createActionButton(String text, String styleClass) {
-        Button button = new Button(text);
-        button.getStyleClass().add(styleClass);
-
-        // Add hover effect animation
-        button.setOnMouseEntered(e -> {
-            ScaleTransition scale = new ScaleTransition(Duration.millis(150), button);
-            scale.setToX(1.05);
-            scale.setToY(1.05);
-            scale.play();
-        });
-
-        button.setOnMouseExited(e -> {
-            ScaleTransition scale = new ScaleTransition(Duration.millis(150), button);
-            scale.setToX(1.0);
-            scale.setToY(1.0);
-            scale.play();
-        });
-
-        return button;
     }
 
     private HBox createEnhancedReactionsArea(Post post) throws SQLException {
@@ -501,7 +562,7 @@ public class PostListController {
 
         summary.getChildren().addAll(emojiStack, countLabel);
         return summary;
-        }
+    }
     private HBox createReactionPopup(int postId, String currentUserReaction) {
         HBox panel = new HBox(15);
         panel.getStyleClass().add("reaction-popup-panel");
@@ -836,5 +897,33 @@ public class PostListController {
         Label label = new Label(text);
         label.getStyleClass().add(styleClass);
         postsContainer.getChildren().add(label);
+    }
+
+    private void showSuccessAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+
+        // Apply custom styling to the alert
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/styles/front/alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("success-alert");
+
+        alert.showAndWait();
+    }
+
+    private void showErrorAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+
+        // Apply custom styling to the alert
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/styles/front/alert.css").toExternalForm());
+        dialogPane.getStyleClass().add("error-alert");
+
+        alert.showAndWait();
     }
 }

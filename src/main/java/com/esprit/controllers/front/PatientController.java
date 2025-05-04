@@ -1,6 +1,5 @@
 package com.esprit.controllers.front;
 
-import com.esprit.main.App;
 import com.esprit.models.User;
 import com.esprit.utils.WindowManager;
 import javafx.event.ActionEvent;
@@ -20,6 +19,7 @@ import java.io.IOException;
 
 public class PatientController {
 
+    @FXML private Button messagesBtn;
     @FXML private Label usernameLabel;
     @FXML private Button logoutBtn;
     @FXML private StackPane contentPane;
@@ -52,8 +52,6 @@ public class PatientController {
             formStage.setScene(new Scene(form));
             formStage.initModality(Modality.APPLICATION_MODAL);
             formStage.showAndWait();
-
-
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -94,6 +92,26 @@ public class PatientController {
     @FXML
     private void handleEventsClick() {
         System.out.println("events clicked");
+    }
+
+    @FXML
+    public void handleMessages() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/Front/ConversationsList.fxml"));
+            Parent content = loader.load();
+
+            // Clear existing content and add new content
+            contentPane.getChildren().setAll(content);
+
+            // Pass current user ID to the form controller
+            ConversationsListController controller = loader.getController();
+            controller.setCurrentUser(currentUser);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Fallback to error message
+            contentPane.getChildren().setAll(new Label("Failed to load: " + "/views/Front/ConversationsList.fxml"));
+        }
     }
 
     // Helper method to load content into the main area
